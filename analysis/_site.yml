@@ -1,7 +1,7 @@
-name: "SCB_Analysis"
+name: SCB_Exploration
 output_dir: ../docs
 navbar:
-  title: "SCB_Analysis"
+  title: SCB_Exploration
   left:
   - text: Home
     href: index.html
