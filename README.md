@@ -1,4 +1,4 @@
-# SCB_Exploration
+# SCBs_Exploration
 
 A [workflowr][] project.
 
