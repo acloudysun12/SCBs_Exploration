@@ -26,7 +26,7 @@ Notes: <br>
 - Consider annual mean temps, i.e. 1660 to 2019 has 360 data points. <br>
 - Estimate sigma_hat_sq by looking at residuals of $X_i - \mu_k(i)$, where $\mu_i$ is based on local linear estimate approach with bandwidth $k \in (\frac{1}{3}, \frac{1}{2})$, as per step (a) of 4.1: Implementation. <br>
 
-Q's:
+Q's: <br>
 - Lowess in R uses "locally-weighted polynomial regression". Can we assume these weights are correct? <br>
 - Should we consider annualized temps, i.e. taking mean of last 4 quarters but quarter over quarter? <br>
 (- Would we ever want equal weights instead of weights based on a kernel?) <br>
@@ -68,7 +68,7 @@ Notes/Q's: <br>
 - What smoothing should be used for periodogram? <br>
 - what type of smoothing for periodogram? Modified Daniell okay? Looked at no smoothing, modified.daniell.c(4,4) (0.03 bandwidth), and modified.daniell.c(18,18) (0.15 banwidth). Seems sigma_sq_hat estimate is similar across any smoothing. We pick the largest estimate. <br>
 - Estimate of sigma_sq_hat should be 2*(area of periodogram), since it's calculated in range of $w \in (0, 1/2)$ but we want range  $w \in (-1/2, 1/2)$? <br> 
-- Is my periodogram approach correct? Why is there mention of a the spectral density function = $\sigma^2/(2\pi)$, so should I multiply the periodogram by $2\pi$? <br> 
+- Is my periodogram approach correct? Why is there mention of the spectral density function = $\sigma^2/(2\pi)$ in Part 5. oe this mean I shouldd multiply my periodogram estimate by $2\pi$? <br> 
 - Should we use periodogram appraoch for variance estimate? Or should we use one of the variance estimates provided in equation (25)? 
 
 ```{r}
@@ -76,10 +76,10 @@ Notes/Q's: <br>
 # Note ce_resids_yr_ts_1 is not used for estimating sigma_sq_hat since ce_resids_yr_ts_2 bigger
 
 smooth_1 = kernel("modified.daniell", c(4,4))
-1/(sum(smooth_1$coef^2) + sum(smooth_1$coef[-1]^2))/length(ce_temps_yr_ts)
+round(1/(sum(smooth_1$coef^2) + sum(smooth_1$coef[-1]^2))/length(ce_temps_yr_ts), 3)
 
 smooth_2 = kernel("modified.daniell", c(18,18))
-1/(sum(smooth_2$coef^2) + sum(smooth_2$coef[-1]^2))/length(ce_temps_yr_ts)
+round(1/(sum(smooth_2$coef^2) + sum(smooth_2$coef[-1]^2))/length(ce_temps_yr_ts), 3)
 
 Iw_smooth_0 = mvspec(ce_resids_yr_ts_2, log = "no") # this uses no smoothing of periodogram
 Iw_smooth_1 = mvspec(ce_resids_yr_ts_2, kernel = smooth_1, log = "no") # this uses modified Daniell
@@ -94,28 +94,31 @@ sig_sq_hat_2
 
 ```
 
-$\hat\sigma^2$ without smoothing: `r round(sig_sq_hat_0, 3)` <br>
-$\hat\sigma^2$ with modified Daniell(4,4): `r round(sig_sq_hat_0, 3)` <br>
-$\hat\sigma^2$ with modified Daniell(18,18): `r round(sig_sq_hat_0, 3)` <br>
+** $\hat\sigma^2$ without smoothing: `r round(sig_sq_hat_0, 3)` ** <br>
+** $\hat\sigma^2$ with modified Daniell(4,4): `r round(sig_sq_hat_0, 3)` ** <br>
+** $\hat\sigma^2$ with modified Daniell(18,18): `r round(sig_sq_hat_0, 3)` ** <br>
 
 <br>
 
 ## Getting optimal bandwidth for $\mu$ <br>
 
-Notes/Q's: 
+Notes/Q's: <br>
 - Not sure how to calculate Ruppert's (1995) optimal bandwidth for MSE. <br>
 - Try a range of bandwidths as the optimal Ruppert bandwidth to see what results we get. <br>
 - Get variance correction factor ($\hat\rho$) for each bandwidth based on step (a) of 4.1: Implementation. <br>
 - $\nu$ based on the sample variance of the errors (observed - fitted local linear estimate based on bandwidth) <br>
-- Final bandwidth based on $2\hat\rho^{1/5}b_{Ruppert}$, trying different values for $b_{Ruppert}$. <br>
+- ** Final bandwidth based on $2\hat\rho^{1/5}b_{Ruppert}$, trying different values for $b_{Ruppert}$. ** <br>
 - Try to figure out Ruppert's 1995 optimal bandwidth for MSE?
 
 ```{r}
+b_ruppert_0 = 0.01
 b_ruppert_1 = 0.02
 b_ruppert_2 = 0.05
 b_ruppert_3 = 0.10
 b_ruppert_4 = 0.20
 
+e_hats_0 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_0)$y -
+  lowess(ce_temps_yr_ts, f = b_ruppert_0*sqrt(2))$y)
 e_hats_1 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_1)$y -
   lowess(ce_temps_yr_ts, f = b_ruppert_1*sqrt(2))$y)
 e_hats_2 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_2)$y -
@@ -125,28 +128,33 @@ e_hats_3 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_3)$y -
 e_hats_4 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_4)$y -
   lowess(ce_temps_yr_ts, f = b_ruppert_4*sqrt(2))$y)
 
+nu_0 = sum(e_hats_0^2)/length(ce_temps_yr_ts)
 nu_1 = sum(e_hats_1^2)/length(ce_temps_yr_ts)
 nu_2 = sum(e_hats_2^2)/length(ce_temps_yr_ts)
 nu_3 = sum(e_hats_3^2)/length(ce_temps_yr_ts)
 nu_4 = sum(e_hats_4^2)/length(ce_temps_yr_ts)
+rho_hat_0 = sig_sq_hat_0/nu_0
 rho_hat_1 = sig_sq_hat_0/nu_1
 rho_hat_2 = sig_sq_hat_0/nu_2
 rho_hat_3 = sig_sq_hat_0/nu_3
 rho_hat_4 = sig_sq_hat_0/nu_4
 
+b_final_0 = 2*(rho_hat_0)^(1/5)*b_ruppert_0
 b_final_1 = 2*(rho_hat_1)^(1/5)*b_ruppert_1
 b_final_2 = 2*(rho_hat_2)^(1/5)*b_ruppert_2
 b_final_3 = 2*(rho_hat_3)^(1/5)*b_ruppert_3
 b_final_4 = 2*(rho_hat_4)^(1/5)*b_ruppert_4
 
 ```
+<br>
 
-Final bandwidths to try: `r paste(round(c(b_final_1, b_final_2, b_final_3, b_final_4), 3), collapse = ", ")`. 
+** Final "optimal" bandwidths to try based on adjustments to Ruppert optimal bandwidth: `r paste(round(c(b_final_0, b_final_1, b_final_2, b_final_3, b_final_4), 3), collapse = ", ")`. ** 
 
 <br>
 
-## Simulations
+## Simulations <br>
 
+Notes/Q's: <br>
 - Try all final bandwidths given the initial "optimal" bandwidths and following calculations of 4.1: Implementation. <br>
 - Try speeding up sim somehow? 
 
@@ -165,11 +173,13 @@ num_sims = 10000
 rnorm_sims = matrix(rnorm(num_sims*length(ce_temps_yr_ts), 0 ,1), 
                     nrow = num_sims, ncol = length(ce_temps_yr_ts))
 
+sup_mus_boot_0 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_0)
 sup_mus_boot_1 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_1)
 sup_mus_boot_2 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_2)
 sup_mus_boot_3 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_3)
 sup_mus_boot_4 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_4)
 
+interval_95_0 = quantile(sup_mus_boot_0, 0.95)*sqrt(sig_sq_hat_0)
 interval_95_1 = quantile(sup_mus_boot_1, 0.95)*sqrt(sig_sq_hat_0)
 interval_95_2 = quantile(sup_mus_boot_2, 0.95)*sqrt(sig_sq_hat_0)
 interval_95_3 = quantile(sup_mus_boot_3, 0.95)*sqrt(sig_sq_hat_0)
@@ -183,11 +193,14 @@ interval_95_4 = quantile(sup_mus_boot_4, 0.95)*sqrt(sig_sq_hat_0)
 
 ```{r}
 
+ce_temps_tilde_0 = 2*lowess(ce_temps_yr_ts, f = b_final_0)$y - lowess(ce_temps_yr_ts, f = b_final_0*sqrt(2))$y
 ce_temps_tilde_1 = 2*lowess(ce_temps_yr_ts, f = b_final_1)$y - lowess(ce_temps_yr_ts, f = b_final_1*sqrt(2))$y
 ce_temps_tilde_2 = 2*lowess(ce_temps_yr_ts, f = b_final_2)$y - lowess(ce_temps_yr_ts, f = b_final_2*sqrt(2))$y
 ce_temps_tilde_3 = 2*lowess(ce_temps_yr_ts, f = b_final_3)$y - lowess(ce_temps_yr_ts, f = b_final_3*sqrt(2))$y
 ce_temps_tilde_4 = 2*lowess(ce_temps_yr_ts, f = b_final_4)$y - lowess(ce_temps_yr_ts, f = b_final_4*sqrt(2))$y
 
+temps_UB_0 = ce_temps_tilde_0 + interval_95_0
+temps_LB_0 = ce_temps_tilde_0 - interval_95_0
 temps_UB_1 = ce_temps_tilde_1 + interval_95_1
 temps_LB_1 = ce_temps_tilde_1 - interval_95_1
 temps_UB_2 = ce_temps_tilde_2 + interval_95_2
@@ -200,16 +213,18 @@ temps_LB_4 = ce_temps_tilde_4 - interval_95_4
 
 ```
 
-Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_1, 3)`: `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_1 | ce_temps_yr_ts <= temps_LB_1))/360, 3)` <br>
-Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_2, 3)`: `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_2 | ce_temps_yr_ts <= temps_LB_2))/360, 3)` <br>
-Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_3, 3)`: `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_3 | ce_temps_yr_ts <= temps_LB_3))/360, 3)` <br>
-Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_4, 3)`: `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_4 | ce_temps_yr_ts <= temps_LB_4))/360, 3)` <br>
+** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_0, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_0 | ce_temps_yr_ts <= temps_LB_0))/360, 3)` ** <br>
+** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_1, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_1 | ce_temps_yr_ts <= temps_LB_1))/360, 3)` ** <br>
+** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_2, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_2 | ce_temps_yr_ts <= temps_LB_2))/360, 3)` ** <br>
+** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_3, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_3 | ce_temps_yr_ts <= temps_LB_3))/360, 3)` ** <br>
+** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_4, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_4 | ce_temps_yr_ts <= temps_LB_4))/360, 3)` ** <br>
 
 Notes/Q's: <br>
-- why do empirical coverage rates seem quite low across all 95% SCBs? <br>
-- This even applies for bandwidths as small as 0.02 (around 7 years), which only has empirical coverage around 93%. <br>
+- Why do empirical coverage rates seem quite low across most 95% SCBs? <br>
+- As bandwidths shorter, empirical coveragae better. <br>
+- Smallest bandwidth of 0.016 (around 6 years) has empirical coverage > 95%, while rest of empirical coverage rates are worse. <br>
 - How short would Ruppert (1995) optimal bandwidth be? Even shorter than 0.02? <br>
-- Is our sigma estimated with spectral density and periodogram too low? Should we use Equation (25) instead? <br> 
+- Is our sigma estimated with spectral density and periodogram too low? Should we try use Equation (25) estimates of $\sigma$ instead? <br> 
 
 <br>
 
@@ -219,6 +234,11 @@ Notes/Q's: <br>
 - For each bandwidth tried, we plot time series, local linear estimates, and their SCBs. 
 
 ```{r}
+plot(ce_temps_yr_ts, main = paste("Temps with LL est. and SCB for bandwidth:", round(b_final_0, 3)))
+lines(as.numeric(years), ce_temps_tilde_0, lwd = 2, lty = 1, col = "coral")
+lines(x = as.numeric(years), y = temps_UB_0, lwd = 2, lty = 2, col = "coral")
+lines(x = as.numeric(years), y = temps_LB_0, lwd = 2, lty = 2, col = "coral")
+
 plot(ce_temps_yr_ts, main = paste("Temps with LL est. and SCB for bandwidth:", round(b_final_1, 3)))
 lines(as.numeric(years), ce_temps_tilde_1, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = temps_UB_1, lwd = 2, lty = 2, col = "coral")
@@ -286,7 +306,7 @@ Notes/Q's: <br>
 Notes/Q's: <br>
 - We re-calculate the 95% SCBs using the local linear estimate with supposed Ruppert optimal bandwidth of 0.05 (final optimal bnwidth of `r round(b_final_2, 2)`.  <br>
 - Note a large discrepancy in empirical coverage rates of the 95% SCBs driven by the difference in estimated variances based on the 3 methods in Equation (25). <br>
-- Empirical coverage ranges anywhere from 85% to 99%. <br>
+- ** Empirical coverage ranges anywhere from 85% to 99%. ** <br>
 - We plot the three SCBs as well for comparison. 
 
 ```{r}
@@ -327,9 +347,14 @@ paste("empirical coveragae sigma 3 (Eq 25):",
 
 ```
 
+<br>
+<br>
+<br>
 
+Playground <br>
 
-Playground 
+Notes/Q's: <br>
+- Thoughts on playing with fake data, like suppose we added 2 degrees Celsius to all temps after 1990, etc.
 
 ```{r}
 ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) >= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
