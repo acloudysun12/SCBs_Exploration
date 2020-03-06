@@ -234,7 +234,8 @@ Notes/Q's: <br>
 - For each bandwidth tried, we plot time series, local linear estimates, and their SCBs. 
 
 ```{r}
-plot(ce_temps_yr_ts, main = paste("Temps with LL est. and SCB for bandwidth:", round(b_final_0, 3)))
+plot(ce_temps_yr_ts, main = paste("Temps with LL est. and SCB for bandwidth:", round(b_final_0, 3)), 
+     ylim = c(5, 13.5))
 lines(as.numeric(years), ce_temps_tilde_0, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = temps_UB_0, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = temps_LB_0, lwd = 2, lty = 2, col = "coral")
