@@ -435,10 +435,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree0d6644f671362332d30027907d0cf6eb641609b9targetblank0d6644fa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/0d6644f671362332d30027907d0cf6eb641609b9" target="_blank">0d6644f</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree378da5eca70b48eb72fbb1f83bd833a2c5a9a187targetblank378da5ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/378da5eca70b48eb72fbb1f83bd833a2c5a9a187" target="_blank">378da5e</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree0d6644f671362332d30027907d0cf6eb641609b9targetblank0d6644fa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree378da5eca70b48eb72fbb1f83bd833a2c5a9a187targetblank378da5ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -482,6 +482,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/378da5eca70b48eb72fbb1f83bd833a2c5a9a187/analysis/weather_data_analysis.Rmd" target="_blank">378da5e</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+<td>
+initial analysis SCBs file
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/acloudysun12/SCBs_Exploration/6c380590584ed76d07833dff3136f8bceea4cc23/docs/weather_data_analysis.html" target="_blank">6c38059</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -928,7 +962,8 @@ temps_LB_4 = ce_temps_tilde_4 - interval_95_4</code></pre>
 <div id="plots-with-scbs" class="section level2">
 <h2>Plots with SCBs <br></h2>
 <p>Notes/Q’s: <br> - For each bandwidth tried, we plot time series, local linear estimates, and their SCBs.</p>
-<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_0, 3)))
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_0, 3)), 
+     ylim = c(5, 13.5))
 lines(as.numeric(years), ce_temps_tilde_0, lwd = 2, lty = 1, col = &quot;coral&quot;)
 lines(x = as.numeric(years), y = temps_UB_0, lwd = 2, lty = 2, col = &quot;coral&quot;)
 lines(x = as.numeric(years), y = temps_LB_0, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
@@ -955,6 +990,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/6c380590584ed76d07833dff3136f8bceea4cc23/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-1.png" target="_blank">6c38059</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-1.png" target="_blank">cc3ac7c</a>
@@ -999,6 +1045,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/6c380590584ed76d07833dff3136f8bceea4cc23/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-2.png" target="_blank">6c38059</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-2.png" target="_blank">cc3ac7c</a>
 </td>
 <td>
@@ -1039,6 +1096,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/6c380590584ed76d07833dff3136f8bceea4cc23/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-3.png" target="_blank">6c38059</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-3.png" target="_blank">cc3ac7c</a>
@@ -1083,6 +1151,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/6c380590584ed76d07833dff3136f8bceea4cc23/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-4.png" target="_blank">6c38059</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-4.png" target="_blank">cc3ac7c</a>
 </td>
 <td>
@@ -1101,6 +1180,43 @@ lines(as.numeric(years), ce_temps_tilde_4, lwd = 2, lty = 1, col = &quot;coral&q
 lines(x = as.numeric(years), y = temps_UB_4, lwd = 2, lty = 2, col = &quot;coral&quot;)
 lines(x = as.numeric(years), y = temps_LB_4, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-5">
+Past versions of unnamed-chunk-6-5.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/6c380590584ed76d07833dff3136f8bceea4cc23/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-6-5.png" target="_blank">6c38059</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p><br></p>
 </div>
 <div id="estimating-gamma0-with-eq-25" class="section level2">
