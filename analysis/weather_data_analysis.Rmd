@@ -94,9 +94,9 @@ sig_sq_hat_2
 
 ```
 
-** $\hat\sigma^2$ without smoothing: `r round(sig_sq_hat_0, 3)` ** <br>
-** $\hat\sigma^2$ with modified Daniell(4,4): `r round(sig_sq_hat_0, 3)` ** <br>
-** $\hat\sigma^2$ with modified Daniell(18,18): `r round(sig_sq_hat_0, 3)` ** <br>
+__$\hat\sigma^2$ without smoothing: `r round(sig_sq_hat_0, 3)`__<br>
+__$\hat\sigma^2$ with modified Daniell(4,4): `r round(sig_sq_hat_0, 3)`__<br>
+__$\hat\sigma^2$ with modified Daniell(18,18): `r round(sig_sq_hat_0, 3)`__<br>
 
 <br>
 
@@ -107,7 +107,7 @@ Notes/Q's: <br>
 - Try a range of bandwidths as the optimal Ruppert bandwidth to see what results we get. <br>
 - Get variance correction factor ($\hat\rho$) for each bandwidth based on step (a) of 4.1: Implementation. <br>
 - $\nu$ based on the sample variance of the errors (observed - fitted local linear estimate based on bandwidth) <br>
-- ** Final bandwidth based on $2\hat\rho^{1/5}b_{Ruppert}$, trying different values for $b_{Ruppert}$. ** <br>
+- __Final bandwidth based on $2\hat\rho^{1/5}b_{Ruppert}$, trying different values for $b_{Ruppert}$.__<br>
 - Try to figure out Ruppert's 1995 optimal bandwidth for MSE?
 
 ```{r}
@@ -148,7 +148,7 @@ b_final_4 = 2*(rho_hat_4)^(1/5)*b_ruppert_4
 ```
 <br>
 
-** Final "optimal" bandwidths to try based on adjustments to Ruppert optimal bandwidth: `r paste(round(c(b_final_0, b_final_1, b_final_2, b_final_3, b_final_4), 3), collapse = ", ")`. ** 
+__Final "optimal" bandwidths to try based on adjustments to Ruppert optimal bandwidth: `r paste(round(c(b_final_0, b_final_1, b_final_2, b_final_3, b_final_4), 3), collapse = ", ")`.__
 
 <br>
 
@@ -213,11 +213,11 @@ temps_LB_4 = ce_temps_tilde_4 - interval_95_4
 
 ```
 
-** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_0, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_0 | ce_temps_yr_ts <= temps_LB_0))/360, 3)` ** <br>
-** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_1, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_1 | ce_temps_yr_ts <= temps_LB_1))/360, 3)` ** <br>
-** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_2, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_2 | ce_temps_yr_ts <= temps_LB_2))/360, 3)` ** <br>
-** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_3, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_3 | ce_temps_yr_ts <= temps_LB_3))/360, 3)` ** <br>
-** Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_4, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_4 | ce_temps_yr_ts <= temps_LB_4))/360, 3)` ** <br>
+__Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_0, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_0 | ce_temps_yr_ts <= temps_LB_0))/360, 3)`__<br>
+__Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_1, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_1 | ce_temps_yr_ts <= temps_LB_1))/360, 3)`__<br>
+__Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_2, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_2 | ce_temps_yr_ts <= temps_LB_2))/360, 3)`__<br>
+__Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_3, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_3 | ce_temps_yr_ts <= temps_LB_3))/360, 3)`__<br>
+__Empirical coverage rate with 95% SCB for bandwidth = `r round(b_final_4, 3)` -- `r round(1 - length(which(ce_temps_yr_ts >= temps_UB_4 | ce_temps_yr_ts <= temps_LB_4))/360, 3)`__<br>
 
 Notes/Q's: <br>
 - Why do empirical coverage rates seem quite low across most 95% SCBs? <br>
@@ -307,7 +307,7 @@ Notes/Q's: <br>
 Notes/Q's: <br>
 - We re-calculate the 95% SCBs using the local linear estimate with supposed Ruppert optimal bandwidth of 0.05 (final optimal bnwidth of `r round(b_final_2, 2)`.  <br>
 - Note a large discrepancy in empirical coverage rates of the 95% SCBs driven by the difference in estimated variances based on the 3 methods in Equation (25). <br>
-- ** Empirical coverage ranges anywhere from 85% to 99%. ** <br>
+- __Empirical coverage ranges anywhere from 85% to 99%.__<br>
 - We plot the three SCBs as well for comparison. 
 
 ```{r}
