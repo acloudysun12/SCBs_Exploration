@@ -32,7 +32,10 @@ Q's:
 (- Would we ever want equal weights instead of weights based on a kernel?) <br>
 
 ```{r}
-ce_temps = read.table("C:/Users/aclou/Documents/Projects/SCBs_Exploration/data/ce_ssn_temp_mean_raw.txt", header = TRUE)
+
+ce_temps_path = "https://raw.githubusercontent.com/acloudysun12/SCBs_Exploration/master/data/ce_ssn_temp_mean_raw.txt"
+ce_temps = read.table(ce_temps_path, header = TRUE) # we essentially ignore 1659
+
 colnames(ce_temps) = c("Year", "Qtr1", "Qtr2", "Qtr3", "Qtr4")
 
 ce_temps_yr = rowMeans(ce_temps[,2:5], na.rm = TRUE)
