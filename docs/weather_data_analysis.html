@@ -344,7 +344,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-03-05
+<strong>Last updated:</strong> 2020-03-06
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -435,10 +435,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree255e23e9bdb82554292a15169fa8138b5b9f170ctargetblank255e23ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/255e23e9bdb82554292a15169fa8138b5b9f170c" target="_blank">255e23e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree0d6644f671362332d30027907d0cf6eb641609b9targetblank0d6644fa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/0d6644f671362332d30027907d0cf6eb641609b9" target="_blank">0d6644f</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree255e23e9bdb82554292a15169fa8138b5b9f170ctargetblank255e23ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree0d6644f671362332d30027907d0cf6eb641609b9targetblank0d6644fa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -482,6 +482,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/0d6644f671362332d30027907d0cf6eb641609b9/analysis/weather_data_analysis.Rmd" target="_blank">0d6644f</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-06
+</td>
+<td>
+initial file for SCBs analysis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/acloudysun12/SCBs_Exploration/708785b0dcdf4c619ea3131ee313ea85ff6fec05/docs/weather_data_analysis.html" target="_blank">708785b</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-03-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -596,7 +630,7 @@ initial analysis file with updates to come
 <div id="data-prep-and-smoothing" class="section level2">
 <h2>Data prep and smoothing <br></h2>
 <p>Notes: <br> - Consider annual mean temps, i.e. 1660 to 2019 has 360 data points. <br> - Estimate sigma_hat_sq by looking at residuals of <span class="math inline">\(X_i - \mu_k(i)\)</span>, where <span class="math inline">\(\mu_i\)</span> is based on local linear estimate approach with bandwidth <span class="math inline">\(k \in (\frac{1}{3}, \frac{1}{2})\)</span>, as per step (a) of 4.1: Implementation. <br></p>
-<p>Q’s: - Lowess in R uses “locally-weighted polynomial regression”. Can we assume these weights are correct? <br> - Should we consider annualized temps, i.e. taking mean of last 4 quarters but quarter over quarter? <br> (- Would we ever want equal weights instead of weights based on a kernel?) <br></p>
+<p>Q’s: <br> - Lowess in R uses “locally-weighted polynomial regression”. Can we assume these weights are correct? <br> - Should we consider annualized temps, i.e. taking mean of last 4 quarters but quarter over quarter? <br> (- Would we ever want equal weights instead of weights based on a kernel?) <br></p>
 <pre class="r"><code>ce_temps_path = &quot;https://raw.githubusercontent.com/acloudysun12/SCBs_Exploration/master/data/ce_ssn_temp_mean_raw.txt&quot;
 ce_temps = read.table(ce_temps_path, header = TRUE) # we essentially ignore 1659
 
@@ -661,15 +695,15 @@ ce_resids_yr_ts_2 = ce_temps_yr_ts - temps_LL_2$y</code></pre>
 </div>
 <div id="estimating-hatsigma2-with-sdf" class="section level2">
 <h2>Estimating <span class="math inline">\(\hat\sigma^2\)</span> with SDF <br></h2>
-<p>Notes/Q’s: <br> - We use spectral density function to get estimate for <span class="math inline">\(\gamma(0)\)</span> aka <span class="math inline">\(\hat\sigma^2\)</span>. <br> - What smoothing should be used for periodogram? <br> - what type of smoothing for periodogram? Modified Daniell okay? Looked at no smoothing, modified.daniell.c(4,4) (0.03 bandwidth), and modified.daniell.c(18,18) (0.15 banwidth). Seems sigma_sq_hat estimate is similar across any smoothing. We pick the largest estimate. <br> - Estimate of sigma_sq_hat should be 2*(area of periodogram), since it’s calculated in range of <span class="math inline">\(w \in (0, 1/2)\)</span> but we want range <span class="math inline">\(w \in (-1/2, 1/2)\)</span>? <br> - Is my periodogram approach correct? Why is there mention of a the spectral density function = <span class="math inline">\(\sigma^2/(2\pi)\)</span>, so should I multiply the periodogram by <span class="math inline">\(2\pi\)</span>? <br> - Should we use periodogram appraoch for variance estimate? Or should we use one of the variance estimates provided in equation (25)?</p>
+<p>Notes/Q’s: <br> - We use spectral density function to get estimate for <span class="math inline">\(\gamma(0)\)</span> aka <span class="math inline">\(\hat\sigma^2\)</span>. <br> - What smoothing should be used for periodogram? <br> - what type of smoothing for periodogram? Modified Daniell okay? Looked at no smoothing, modified.daniell.c(4,4) (0.03 bandwidth), and modified.daniell.c(18,18) (0.15 banwidth). Seems sigma_sq_hat estimate is similar across any smoothing. We pick the largest estimate. <br> - Estimate of sigma_sq_hat should be 2*(area of periodogram), since it’s calculated in range of <span class="math inline">\(w \in (0, 1/2)\)</span> but we want range <span class="math inline">\(w \in (-1/2, 1/2)\)</span>? <br> - Is my periodogram approach correct? Why is there mention of the spectral density function = <span class="math inline">\(\sigma^2/(2\pi)\)</span> in Part 5. oe this mean I shouldd multiply my periodogram estimate by <span class="math inline">\(2\pi\)</span>? <br> - Should we use periodogram appraoch for variance estimate? Or should we use one of the variance estimates provided in equation (25)?</p>
 <pre class="r"><code># Note ce_resids_yr_ts_1 is not used for estimating sigma_sq_hat since ce_resids_yr_ts_2 bigger
 
 smooth_1 = kernel(&quot;modified.daniell&quot;, c(4,4))
-1/(sum(smooth_1$coef^2) + sum(smooth_1$coef[-1]^2))/length(ce_temps_yr_ts)</code></pre>
-<pre><code>[1] 0.03382468</code></pre>
+round(1/(sum(smooth_1$coef^2) + sum(smooth_1$coef[-1]^2))/length(ce_temps_yr_ts), 3)</code></pre>
+<pre><code>[1] 0.034</code></pre>
 <pre class="r"><code>smooth_2 = kernel(&quot;modified.daniell&quot;, c(18,18))
-1/(sum(smooth_2$coef^2) + sum(smooth_2$coef[-1]^2))/length(ce_temps_yr_ts)</code></pre>
-<pre><code>[1] 0.150114</code></pre>
+round(1/(sum(smooth_2$coef^2) + sum(smooth_2$coef[-1]^2))/length(ce_temps_yr_ts), 3)</code></pre>
+<pre><code>[1] 0.15</code></pre>
 <pre class="r"><code>Iw_smooth_0 = mvspec(ce_resids_yr_ts_2, log = &quot;no&quot;) # this uses no smoothing of periodogram</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -796,17 +830,20 @@ sig_sq_hat_1</code></pre>
 <pre class="r"><code>sig_sq_hat_2 = 2*sum(Iw_smooth_2$freq[1] * Iw_smooth_2$spec) 
 sig_sq_hat_2</code></pre>
 <pre><code>[1] 0.2898102</code></pre>
-<p><span class="math inline">\(\hat\sigma^2\)</span> without smoothing: 0.289 <br> <span class="math inline">\(\hat\sigma^2\)</span> with modified Daniell(4,4): 0.289 <br> <span class="math inline">\(\hat\sigma^2\)</span> with modified Daniell(18,18): 0.289 <br></p>
+<p>** <span class="math inline">\(\hat\sigma^2\)</span> without smoothing: 0.289 ** <br> ** <span class="math inline">\(\hat\sigma^2\)</span> with modified Daniell(4,4): 0.289 ** <br> ** <span class="math inline">\(\hat\sigma^2\)</span> with modified Daniell(18,18): 0.289 ** <br></p>
 <p><br></p>
 </div>
 <div id="getting-optimal-bandwidth-for-mu" class="section level2">
 <h2>Getting optimal bandwidth for <span class="math inline">\(\mu\)</span> <br></h2>
-<p>Notes/Q’s: - Not sure how to calculate Ruppert’s (1995) optimal bandwidth for MSE. <br> - Try a range of bandwidths as the optimal Ruppert bandwidth to see what results we get. <br> - Get variance correction factor (<span class="math inline">\(\hat\rho\)</span>) for each bandwidth based on step (a) of 4.1: Implementation. <br> - <span class="math inline">\(\nu\)</span> based on the sample variance of the errors (observed - fitted local linear estimate based on bandwidth) <br> - Final bandwidth based on <span class="math inline">\(2\hat\rho^{1/5}b_{Ruppert}\)</span>, trying different values for <span class="math inline">\(b_{Ruppert}\)</span>. <br> - Try to figure out Ruppert’s 1995 optimal bandwidth for MSE?</p>
-<pre class="r"><code>b_ruppert_1 = 0.02
+<p>Notes/Q’s: <br> - Not sure how to calculate Ruppert’s (1995) optimal bandwidth for MSE. <br> - Try a range of bandwidths as the optimal Ruppert bandwidth to see what results we get. <br> - Get variance correction factor (<span class="math inline">\(\hat\rho\)</span>) for each bandwidth based on step (a) of 4.1: Implementation. <br> - <span class="math inline">\(\nu\)</span> based on the sample variance of the errors (observed - fitted local linear estimate based on bandwidth) <br> - ** Final bandwidth based on <span class="math inline">\(2\hat\rho^{1/5}b_{Ruppert}\)</span>, trying different values for <span class="math inline">\(b_{Ruppert}\)</span>. ** <br> - Try to figure out Ruppert’s 1995 optimal bandwidth for MSE?</p>
+<pre class="r"><code>b_ruppert_0 = 0.01
+b_ruppert_1 = 0.02
 b_ruppert_2 = 0.05
 b_ruppert_3 = 0.10
 b_ruppert_4 = 0.20
 
+e_hats_0 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_0)$y -
+  lowess(ce_temps_yr_ts, f = b_ruppert_0*sqrt(2))$y)
 e_hats_1 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_1)$y -
   lowess(ce_temps_yr_ts, f = b_ruppert_1*sqrt(2))$y)
 e_hats_2 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_2)$y -
@@ -816,28 +853,29 @@ e_hats_3 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_3)$y -
 e_hats_4 = ce_temps_yr_ts -  (2*lowess(ce_temps_yr_ts, f = b_ruppert_4)$y -
   lowess(ce_temps_yr_ts, f = b_ruppert_4*sqrt(2))$y)
 
+nu_0 = sum(e_hats_0^2)/length(ce_temps_yr_ts)
 nu_1 = sum(e_hats_1^2)/length(ce_temps_yr_ts)
 nu_2 = sum(e_hats_2^2)/length(ce_temps_yr_ts)
 nu_3 = sum(e_hats_3^2)/length(ce_temps_yr_ts)
 nu_4 = sum(e_hats_4^2)/length(ce_temps_yr_ts)
+rho_hat_0 = sig_sq_hat_0/nu_0
 rho_hat_1 = sig_sq_hat_0/nu_1
 rho_hat_2 = sig_sq_hat_0/nu_2
 rho_hat_3 = sig_sq_hat_0/nu_3
 rho_hat_4 = sig_sq_hat_0/nu_4
 
+b_final_0 = 2*(rho_hat_0)^(1/5)*b_ruppert_0
 b_final_1 = 2*(rho_hat_1)^(1/5)*b_ruppert_1
 b_final_2 = 2*(rho_hat_2)^(1/5)*b_ruppert_2
 b_final_3 = 2*(rho_hat_3)^(1/5)*b_ruppert_3
 b_final_4 = 2*(rho_hat_4)^(1/5)*b_ruppert_4</code></pre>
-<p>Final bandwidths to try: 0.042, 0.101, 0.197, 0.388.</p>
+<p><br></p>
+<p>** Final “optimal” bandwidths to try based on adjustments to Ruppert optimal bandwidth: 0.017, 0.042, 0.101, 0.197, 0.388. **</p>
 <p><br></p>
 </div>
 <div id="simulations" class="section level2">
-<h2>Simulations</h2>
-<ul>
-<li>Try all final bandwidths given the initial “optimal” bandwidths and following calculations of 4.1: Implementation. <br></li>
-<li>Try speeding up sim somehow?</li>
-</ul>
+<h2>Simulations <br></h2>
+<p>Notes/Q’s: <br> - Try all final bandwidths given the initial “optimal” bandwidths and following calculations of 4.1: Implementation. <br> - Try speeding up sim somehow?</p>
 <pre class="r"><code>set.seed(9980)
 
 years = time(ce_temps_yr_ts)
@@ -852,11 +890,13 @@ num_sims = 10000
 rnorm_sims = matrix(rnorm(num_sims*length(ce_temps_yr_ts), 0 ,1), 
                     nrow = num_sims, ncol = length(ce_temps_yr_ts))
 
+sup_mus_boot_0 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_0)
 sup_mus_boot_1 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_1)
 sup_mus_boot_2 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_2)
 sup_mus_boot_3 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_3)
 sup_mus_boot_4 = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, b_final = b_final_4)
 
+interval_95_0 = quantile(sup_mus_boot_0, 0.95)*sqrt(sig_sq_hat_0)
 interval_95_1 = quantile(sup_mus_boot_1, 0.95)*sqrt(sig_sq_hat_0)
 interval_95_2 = quantile(sup_mus_boot_2, 0.95)*sqrt(sig_sq_hat_0)
 interval_95_3 = quantile(sup_mus_boot_3, 0.95)*sqrt(sig_sq_hat_0)
@@ -865,11 +905,14 @@ interval_95_4 = quantile(sup_mus_boot_4, 0.95)*sqrt(sig_sq_hat_0)</code></pre>
 </div>
 <div id="putting-it-together" class="section level2">
 <h2>Putting it together <br></h2>
-<pre class="r"><code>ce_temps_tilde_1 = 2*lowess(ce_temps_yr_ts, f = b_final_1)$y - lowess(ce_temps_yr_ts, f = b_final_1*sqrt(2))$y
+<pre class="r"><code>ce_temps_tilde_0 = 2*lowess(ce_temps_yr_ts, f = b_final_0)$y - lowess(ce_temps_yr_ts, f = b_final_0*sqrt(2))$y
+ce_temps_tilde_1 = 2*lowess(ce_temps_yr_ts, f = b_final_1)$y - lowess(ce_temps_yr_ts, f = b_final_1*sqrt(2))$y
 ce_temps_tilde_2 = 2*lowess(ce_temps_yr_ts, f = b_final_2)$y - lowess(ce_temps_yr_ts, f = b_final_2*sqrt(2))$y
 ce_temps_tilde_3 = 2*lowess(ce_temps_yr_ts, f = b_final_3)$y - lowess(ce_temps_yr_ts, f = b_final_3*sqrt(2))$y
 ce_temps_tilde_4 = 2*lowess(ce_temps_yr_ts, f = b_final_4)$y - lowess(ce_temps_yr_ts, f = b_final_4*sqrt(2))$y
 
+temps_UB_0 = ce_temps_tilde_0 + interval_95_0
+temps_LB_0 = ce_temps_tilde_0 - interval_95_0
 temps_UB_1 = ce_temps_tilde_1 + interval_95_1
 temps_LB_1 = ce_temps_tilde_1 - interval_95_1
 temps_UB_2 = ce_temps_tilde_2 + interval_95_2
@@ -878,17 +921,17 @@ temps_UB_3 = ce_temps_tilde_3 + interval_95_3
 temps_LB_3 = ce_temps_tilde_3 - interval_95_3
 temps_UB_4 = ce_temps_tilde_4 + interval_95_4
 temps_LB_4 = ce_temps_tilde_4 - interval_95_4</code></pre>
-<p>Empirical coverage rate with 95% SCB for bandwidth = 0.042: 0.931 <br> Empirical coverage rate with 95% SCB for bandwidth = 0.101: 0.703 <br> Empirical coverage rate with 95% SCB for bandwidth = 0.197: 0.553 <br> Empirical coverage rate with 95% SCB for bandwidth = 0.388: 0.386 <br></p>
-<p>Notes/Q’s: <br> - why do empirical coverage rates seem quite low across all 95% SCBs? <br> - This even applies for bandwidths as small as 0.02 (around 7 years), which only has empirical coverage around 93%. <br> - How short would Ruppert (1995) optimal bandwidth be? Even shorter than 0.02? <br> - Is our sigma estimated with spectral density and periodogram too low? Should we use Equation (25) instead? <br></p>
+<p>** Empirical coverage rate with 95% SCB for bandwidth = 0.017 – 0.997 ** <br> ** Empirical coverage rate with 95% SCB for bandwidth = 0.042 – 0.931 ** <br> ** Empirical coverage rate with 95% SCB for bandwidth = 0.101 – 0.703 ** <br> ** Empirical coverage rate with 95% SCB for bandwidth = 0.197 – 0.553 ** <br> ** Empirical coverage rate with 95% SCB for bandwidth = 0.388 – 0.386 ** <br></p>
+<p>Notes/Q’s: <br> - Why do empirical coverage rates seem quite low across most 95% SCBs? <br> - As bandwidths shorter, empirical coveragae better. <br> - Smallest bandwidth of 0.016 (around 6 years) has empirical coverage &gt; 95%, while rest of empirical coverage rates are worse. <br> - How short would Ruppert (1995) optimal bandwidth be? Even shorter than 0.02? <br> - Is our sigma estimated with spectral density and periodogram too low? Should we try use Equation (25) estimates of <span class="math inline">\(\sigma\)</span> instead? <br></p>
 <p><br></p>
 </div>
 <div id="plots-with-scbs" class="section level2">
 <h2>Plots with SCBs <br></h2>
 <p>Notes/Q’s: <br> - For each bandwidth tried, we plot time series, local linear estimates, and their SCBs.</p>
-<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_1, 3)))
-lines(as.numeric(years), ce_temps_tilde_1, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_UB_1, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_LB_1, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_0, 3)))
+lines(as.numeric(years), ce_temps_tilde_0, lwd = 2, lty = 1, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_UB_0, lwd = 2, lty = 2, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_LB_0, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
@@ -927,10 +970,10 @@ Adam Sun
 </table>
 </div>
 </div>
-<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_2, 3)))
-lines(as.numeric(years), ce_temps_tilde_2, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_UB_2, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_LB_2, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_1, 3)))
+lines(as.numeric(years), ce_temps_tilde_1, lwd = 2, lty = 1, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_UB_1, lwd = 2, lty = 2, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_LB_1, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-2">
@@ -969,10 +1012,10 @@ Adam Sun
 </table>
 </div>
 </div>
-<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_3, 3)))
-lines(as.numeric(years), ce_temps_tilde_3, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_UB_3, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_LB_3, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_2, 3)))
+lines(as.numeric(years), ce_temps_tilde_2, lwd = 2, lty = 1, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_UB_2, lwd = 2, lty = 2, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_LB_2, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-3">
@@ -1011,10 +1054,10 @@ Adam Sun
 </table>
 </div>
 </div>
-<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_4, 3)))
-lines(as.numeric(years), ce_temps_tilde_4, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_UB_4, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = temps_LB_4, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_3, 3)))
+lines(as.numeric(years), ce_temps_tilde_3, lwd = 2, lty = 1, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_UB_3, lwd = 2, lty = 2, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_LB_3, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-4">
@@ -1053,6 +1096,11 @@ Adam Sun
 </table>
 </div>
 </div>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est. and SCB for bandwidth:&quot;, round(b_final_4, 3)))
+lines(as.numeric(years), ce_temps_tilde_4, lwd = 2, lty = 1, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_UB_4, lwd = 2, lty = 2, col = &quot;coral&quot;)
+lines(x = as.numeric(years), y = temps_LB_4, lwd = 2, lty = 2, col = &quot;coral&quot;)</code></pre>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 </div>
 <div id="estimating-gamma0-with-eq-25" class="section level2">
@@ -1084,7 +1132,7 @@ sig_hat_3_Am_2 = sqrt(pi*kn_2/(2*(length(breaks_kn_2)-1)))*sqrt(sum(abs(df_Am_2$
 </div>
 <div id="re-calc-scbs-with-eq-25" class="section level2">
 <h2>Re-Calc SCBs with Eq (25) <br></h2>
-<p>Notes/Q’s: <br> - We re-calculate the 95% SCBs using the local linear estimate with supposed Ruppert optimal bandwidth of 0.05 (final optimal bnwidth of 0.1. <br> - Note a large discrepancy in empirical coverage rates of the 95% SCBs driven by the difference in estimated variances based on the 3 methods in Equation (25). <br> - Empirical coverage ranges anywhere from 85% to 99%. <br> - We plot the three SCBs as well for comparison.</p>
+<p>Notes/Q’s: <br> - We re-calculate the 95% SCBs using the local linear estimate with supposed Ruppert optimal bandwidth of 0.05 (final optimal bnwidth of 0.1. <br> - Note a large discrepancy in empirical coverage rates of the 95% SCBs driven by the difference in estimated variances based on the 3 methods in Equation (25). <br> - ** Empirical coverage ranges anywhere from 85% to 99%. ** <br> - We plot the three SCBs as well for comparison.</p>
 <pre class="r"><code>interval_95_1_Am = quantile(sup_mus_boot_2, 0.95)*sqrt(sig_hat_1_Am_1)
 interval_95_2_Am = quantile(sup_mus_boot_2, 0.95)*sqrt(sig_hat_2_Am_1)
 interval_95_3_Am = quantile(sup_mus_boot_2, 0.95)*sqrt(sig_hat_3_Am_2)
@@ -1158,7 +1206,9 @@ Adam Sun
 <pre class="r"><code>paste(&quot;empirical coveragae sigma 3 (Eq 25):&quot;, 
       round(length(which(ce_temps_yr_ts &lt;= temps_UB_3_Am &amp; ce_temps_yr_ts &gt;= temps_LB_3_Am))/360, 3))</code></pre>
 <pre><code>[1] &quot;empirical coveragae sigma 3 (Eq 25): 0.992&quot;</code></pre>
-<p>Playground</p>
+<p><br> <br> <br></p>
+<p>Playground <br></p>
+<p>Notes/Q’s: <br> - Thoughts on playing with fake data, like suppose we added 2 degrees Celsius to all temps after 1990, etc.</p>
 <pre class="r"><code>ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) &gt;= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
 plot(ce_temps_yr_ts_fake)
 lines(lowess(ce_temps_yr_ts_fake, f= 0.1), lwd = 2, col = 2)
