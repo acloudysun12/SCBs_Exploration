@@ -1,0 +1,363 @@
+---
+title: "SCB Analysis on Simulated TS"
+author: "Sun, Adam"
+date: "March 16, 2020"
+output: 
+  html_document:
+    theme: flatly
+    toc: yes
+    toc_depth: 2
+    toc_float:
+      collapsed: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+rm(list = ls())
+library(knitr)
+library(astsa)
+library(tidyverse)
+library(ggplot2)
+library(scales)
+library(tseries)
+library(fracdiff)
+library(forecast)
+library(KernSmooth)
+
+```
+
+## SCB Prep Functions <br> 
+
+```{r}
+
+calc_sig_hats_eq25 = function(series, p = 1/3){
+  k_n = round(length(series)^p)
+  breaks = c(seq(1, length(series), by = k_n))
+  m = floor(length(series)/k_n)
+  A_ms = cbind(idx = seq(1,length(series)), series) %>% as.data.frame() %>% 
+    mutate(m = cut(idx, breaks = breaks, labels = FALSE, include.lowest = TRUE)) %>% 
+    filter(!is.na(m)) %>% # we do not want remainders since not enough for one more interval
+    group_by(m) %>% summarize(A_m = mean(series)) %>% select(A_m) %>% as.matrix()
+  
+  q3_norm = qnorm(p = 0.75, 0, 1)
+  sig_hat_1 = sqrt(pi*k_n)/(2*(m-1))*sum(abs(A_ms - lag(A_ms, 1)), na.rm = TRUE)
+  sig_hat_2 = sqrt(k_n/(2*q3_norm))*median(abs(A_ms - lag(A_ms, 1)), na.rm = TRUE)
+  sig_hat_3 = sqrt(k_n/(2*(length(breaks)-1)))*sum((A_ms - lag(A_ms, 1))^2, na.rm = TRUE)^(1/2)
+  
+  return(list(k_n = k_n, A_ms = A_ms, hat_1 = sig_hat_1, hat_2 = sig_hat_2, hat_3 = sig_hat_3))
+  
+}
+
+calc_k_final = function(time_idx, series, sig_hat){
+  k_ruppert = dpill(x = time_idx, y = series)
+  b_ruppert = k_ruppert/length(series)
+  loclin_1 = locpoly(time_idx, series, bandwidth = k_ruppert, gridsize = length(time_idx))
+  loclin_2 = locpoly(time_idx, series, bandwidth = k_ruppert*sqrt(2), gridsize = length(time_idx))
+  e_hats = series - (2*loclin_1$y - loclin_2$y) 
+  nu = sum(e_hats^2)/length(series)
+  rho_hat = sig_hat^2/nu
+  k_final = 2*(rho_hat)^(1/5)*k_ruppert
+  return(list(k_final = k_final, e_hats = e_hats, nu = nu, rho_hat = rho_hat)) 
+}
+
+
+calc_suprem_rnorm = function(rand_iter, time_idx, k_final){
+  loclin_iter_b_1 = locpoly(x = time_idx, y = rand_iter, bandwidth = k_final, gridsize = length(time_idx))
+  loclin_iter_b_2 = locpoly(x = time_idx, y = rand_iter, bandwidth = k_final*sqrt(2), gridsize = length(time_idx))
+  return(mu_suprem = max(abs(2*loclin_iter_b_1$y - loclin_iter_b_2$y))) 
+}
+
+calc_q95 = function(sup_mus_boot){
+  return(quantile(abs(sup_mus_boot), 0.95))
+} 
+
+calc_coverage = function(time_idx, series, mean_series, q_95, sig_hat, k_final){
+  interval_95 = q_95*sig_hat 
+  loclin_1 = locpoly(x = time_idx, y = series, bandwidth = k_final, gridsize = length(time_idx))
+  loclin_2 = locpoly(x = time_idx, y = series, bandwidth = k_final*sqrt(2), gridsize = length(time_idx))
+  series_tilde = 2*loclin_1$y - loclin_2$y
+  return(sum(abs(mean_series - series_tilde) > interval_95))
+}
+
+calc_mu_tilde = function(time_idx, series, k_final){
+  loclin_1 = locpoly(x = time_idx, y = series, bandwidth = k_final, gridsize = length(time_idx))
+  loclin_2 = locpoly(x = time_idx, y = series, bandwidth = k_final*sqrt(2), gridsize = length(time_idx))
+  series_tilde = 2*loclin_1$y - loclin_2$y
+  return(series_tilde)
+}
+
+calc_SCBs = function(time_idx, series, sup_mus_boot, q_95, sig_hat, k_final){
+  interval_95 = q_95*sig_hat 
+  series_tilde = calc_mu_tilde(time_idx = time_idx, series = series, k_final = k_final)
+  temps_UB = series_tilde + interval_95
+  temps_LB = series_tilde - interval_95
+  return(list(q_95 = interval_95, loclin_fit = series_tilde, series_UB = temps_UB, series_LB = temps_LB))
+}
+
+
+```
+
+<br>
+
+## Simulations <br>
+
+### Test the coverage and bias first with an AR1 series. 
+
+This is for a proof of concept. <br>
+The SCBs should be close to the nominal 95% coverage (i.e. optimal) under the assumption that the error terms follow a stationary process. <br>
+We let our error term be an AR1 series, with $\phi_1 = 0.5$. Thus, our model is $e_n = 0.5e_{n-1} + \epsilon_n$. <br>
+The variance of our AR1 model is $\frac{1}{1-.5^2} = \frac{4}{3}$. This is because $Var(e_n)$ can be re-written as $E(.5e_{n-1} + \epsilon_n, .5e_{n-1} + \epsilon_n) = .5^2Var(e_{n-1}) + 1$, since $\epsilon_i's \sim i.i.d. N(0,1)$. <br> 
+$e_n$ being stationary implies we can re-write the equation as $\hat\gamma_0(1-.5^2) = 1 \rightarrow \hat\gamma_0 = \frac{1}{.75}$. <br>
+
+For an AR1 model with finite length, we estimate the long-term variance with a length 10^6 AR1 series. <br>
+To test coverage, we set the underlying mean series $\mu_t = cos(2 \pi t)$ and generate normalized AR1 errors to get 10^4 realizations of $X_n$. <br>
+We simulate $t\ in [0,2]$ at intervals of 1/200 (i.e. two full cycles). <br>
+
+We follow Section 4 step (b) to adjust the automatic bandwidth selected under Ruppert (i.e. dpill function in R) to the optimal banwidth that would cover the mean series 95% of the time, denoted $b_{opt}$. <br>
+To confirm this bandwidth is most representative of the nominal 95% coverage, we calculate coverage rates with bandwidths $\frac{3}{5}b_{opt}$, $\frac{4}{5}b_{opt}$, $\frac{5}{4} b_{opt}$, and $\frac{6}{4} b_{opt}$ as well for comparison,
+
+```{r}
+set.seed(9999)
+sig_hats = numeric()
+for (iters in 1:1){
+e_is = arima.sim(list(order = c(1,0,0), ar = 0.5), 100000)
+sig_hat_LT = round(calc_sig_hats_eq25(e_is, p = 1/3)$hat_3, 3)
+sig_hats = c(sig_hats, sig_hat_LT)
+}
+sig_hat_LT = round(mean(sig_hats), 3)
+sig_hat_LT
+
+
+t = seq(0, 400)
+mean_Xn = cos(2*pi*t/200)
+
+vec_k_rups = numeric()
+vec_k_opts = numeric()
+vec_rho_hats = numeric()
+for (iters in 1:1000){
+  e_is_iter = arima.sim(list(order = c(1,0,0), ar = 0.5), length(t))
+  Xn_sim = cos(2*pi*t/200) + e_is_iter
+  k_rup = dpill(x = t, y = Xn_sim)
+  k_opt_results = calc_k_final(t, Xn_sim, sig_hat = sig_hat_LT)
+  k_opt = k_opt_results$k_final
+  vec_k_rups = c(vec_k_rups, k_rup)
+  vec_k_opts = c(vec_k_opts, k_opt)
+  vec_rho_hats = c(vec_rho_hats, round(k_opt_results$rho_hat, 3))
+}
+
+k_rup = round(mean(vec_k_rups), 2)
+b_rup = round(k_rup/length(t), 3)
+k_opt = round(mean(vec_k_opts), 2)
+b_opt = round(k_opt/length(t), 3)
+k_lo1 = round(k_opt*0.6, 2)
+k_lo2 = round(k_opt*0.8, 2)
+k_hi1 = round(k_opt*1.25, 2)
+k_hi2 = round(k_opt*1.5, 2)
+
+df_ar1_scbs = data.frame(b = numeric(), q_95 = numeric(), coverage = numeric(), bias = numeric())
+
+q_95_vec = numeric()
+num_sims = 10000
+for (k_val in c(k_lo1, k_lo2, k_opt, k_hi1, k_hi2)){
+  rnorm_sims = matrix(rnorm(num_sims*length(t), 0 ,1), 
+                      nrow = num_sims, ncol = length(t))
+  sup_mus_boot = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm, 
+                       time_idx = t, k_final = k_val)
+  q_95 = calc_q95(sup_mus_boot)
+  q_95_vec = c(q_95_vec, q_95)
+}
+
+# calculate empirical coverages under different optimal bandwidths
+for (idx in 1:5){
+  k_val = c(k_lo1, k_lo2, k_opt, k_hi1, k_hi2)[idx]
+  q_95 = q_95_vec[idx]
+
+  num_reps = 10000
+  coverages = numeric(0)
+  mu_tildes = vector("list", length = num_reps)
+  for (iters in 1:num_reps){
+    e_is = arima.sim(list(order = c(1,0,0), ar = 0.5), length(t))
+    Xn_sim = cos(2*pi*t/200) + e_is
+    
+    mu_tildes[[iters]] = calc_mu_tilde(time_idx = t, Xn_sim, k_final = k_val)
+    coverages = c(coverages, 
+                  calc_coverage(t, series = Xn_sim, mean_series = mean_Xn, q_95, sig_hat = sig_hat_LT, k_val))
+  }
+  
+  coverage_pct = length(which(coverages == 0))/length(coverages)
+  bias_calc = max(abs(apply(bind_cols(mu_tildes), MARGIN = 1, mean) - mean_Xn))
+  
+  df_ar1_scbs = rbind(df_ar1_scbs, round(c(k_val/length(t), q_95, coverage_pct, bias_calc), 3))
+}
+
+colnames(df_ar1_scbs) = c("b", "q_95", "coverage", "bias")
+
+```
+
+<br>
+
+Results: 
+Under the automatic bandwidth selector by Ruppert which minimizes MSE for iid errors, the optimal bandwidth is `r b_rup`. The optimal bandwidth adjusted is `r b_opt`. <br>
+The adjustment uses a variance correction factor of $\hat\rho$ = `r round(mean(vec_rho_hats), 3)` to get $b_{opt}$ = $2\hat\rho^{1/5} \cdot b_{rup}$. <br>
+We bootstrap normal errors (with 10^4 repetitions) to estimate the 95% quantile $\hat q_{0.95}$ for each bandwdith. <br>
+We also use 10^4 repetitions of the series to calculate the bias and empirical coverage rates. <br>
+The results indicate that our optimal bandwidth generally matches most closely with our nominal 95% coverage. Shorter bandwidths give us higher than 95% coverage, while longer bandwidths give us lower than 95% coverage. 
+
+```{r echo = FALSE}
+df_ar1_scbs %>% 
+  mutate(b_desc = c("0.60 x b_opt", "0.80 x b_opt", "1.00 x b_opt", "1.25 x b_opt", "1.50 x b_opt")) %>% 
+  select(b_desc, b, q_95, coverage, bias) %>% 
+  kable() 
+```
+
+
+<br>
+
+### Calculate coverage and bias under non-linear, non-stationary errors.
+
+We replicate the setup of the error structure in Section 6 to see if we can replicate similar results seen in Table 2. <br>
+We select a range of values of $\theta \in c(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)$ and estimate the long-run standard deviation $\hat\sigma(\theta)$ by generating series with length of 10^4. <br>
+Our estimated long-run standard deviations tie out with Table 1. <br>
+We note that the 1st and 3rd methods of calculating $\sigma_1$ and $\sigma_3$ are similar, while $\sigma_2$ is considerably smaller. As suggested by the paper and its calculation, $\sigma_2$ is more robust to jumps in the mean series (since it relies on calculating the median), but when jumps are not present in the series as is the case with $X_n = cos(2\pi n)$, $\sigma_1$ and $\sigma_3$ are more accurate.
+
+```{r echo = FALSE}
+set.seed(9996)
+
+thetas_vec = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+# thetas_vec = c(0, 0.25, 0.5, 0.75)
+t = seq(0, 100000)
+
+
+sigma_hat_LT_vec = numeric()
+for (theta_val in thetas_vec){
+  w_is = rnorm(length(t))
+  e_is = c(rnorm(1))
+  for(i in 1:(length(t)-1)){
+    e_is = c(e_is, theta_val*abs(e_is[i]) + sqrt(1-theta_val^2)*w_is[i])
+  }
+  sig_hat_LT = calc_sig_hats_eq25(e_is, p = 1/3)
+  sigma_hat_LT_vec = c(sigma_hat_LT_vec, c(sig_hat_LT$hat_1, sig_hat_LT$hat_2, sig_hat_LT$hat_3))
+}
+
+sig_hats_LT_vec = data.frame(thetas = sort(rep(thetas_vec, 3)),
+                             sigma = rep(c("hat_1", "hat_2", "hat_3"), length(thetas_vec)),
+                             sigma_val = round(sigma_hat_LT_vec, 3)) 
+
+```
+
+Table of estimated long-run SDs $\hat\sigma(\theta)$: 
+
+```{r echo = FALSE}
+
+sig_hats_LT_vec %>% spread(key = thetas, value = sigma_val) %>% 
+    kable(caption = "Table of estimated long-run SDs:") 
+
+```
+
+<br>
+
+In order to see how non-linearity and bandwidth length affect the coverage, we select range of values for the bandwidth $b_{test} \in c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10, 0.11, 0.12, 0.15, 0.20)$ and use 10^4 repetitions to bootstrap the 95% CI interval $q_95$. <br>
+After, we use 10^4 repetitions to bootstrap the $\hat q(b)$ estimate for each bandwidth. <br>
+Using these $\hat q$, we generaate 10^4 realizations of the series to calculate the emperical coverage rate. <br>
+For each $b_{test}$, we also calculate the bias with 10^4 realizations of the series. 
+Our estimated long-run standard deviations tie out with Table 1. <br>
+
+```{r echo = FALSE}
+aaa = Sys.time()
+
+set.seed(9980)
+
+t = seq(0, 200)
+mean_Xn = cos(2*pi*t/200)
+num_reps = 5000 # number of reps to calcualte the SCB coverage and bias value
+
+b_vec = c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10, 0.12, 0.15, 0.20)
+
+df_results_scbs = data.frame(b = numeric(), theta = numeric(), 
+                             q_95 = numeric(), coverage = numeric(), bias = numeric())
+
+for(b_test in b_vec){
+  k_test = round(b_test*length(t))
+  
+  # For each bandwidth value, bootstrap to find the confidence interval band  
+  num_sims = 10000
+  rnorm_sims = matrix(rnorm(num_sims*length(t), 0 ,1), 
+                      nrow = num_sims, ncol = length(t))
+  sup_mus_boot = apply(rnorm_sims, MARGIN = 1, FUN = calc_suprem_rnorm,
+                     time_idx = t, k_final = k_test)
+  q_95 = calc_q95(sup_mus_boot)
+  
+  for(theta in thetas_vec){
+  sig_hat_LT = sig_hats_LT_vec %>% 
+    filter(thetas == theta, sigma == "hat_3") %>% select(sigma_val) %>% as.numeric()
+  
+  coverages = numeric(0) 
+  mu_tildes = vector("list", length = num_reps)
+  for (iters in 1:num_reps){
+    w_is = rnorm(length(t))
+    e_is = rnorm(1)
+    for(i in 1:(length(t)-1)){
+      e_is = c(e_is, theta*abs(e_is[i]) + sqrt(1-theta^2)*w_is[i])
+    }
+    e_is_prime = (1/sig_hat_LT) * (e_is - theta*sqrt(2/pi))
+    Xn_sim = cos(2*pi*t/200) + e_is_prime
+    
+    mu_tildes[[iters]] = calc_mu_tilde(time_idx = t, Xn_sim, k_final = k_test)
+    # sig_hat = 1 because we adjust e_i's to get it so it's mean 0 SD 1, else would use LT sigma_hat
+    coverages = c(coverages, calc_coverage(t, Xn_sim, mean_Xn, q_95, sig_hat = 1, k_test)) 
+  }
+  
+  coverage_pct = length(which(coverages == 0))/length(coverages)
+  
+  bias_calc = max(abs(apply(bind_cols(mu_tildes), MARGIN = 1, mean) - mean_Xn))
+  
+  # Store results in dataframe
+  df_results_scbs = rbind(df_results_scbs, 
+                          c(b_test, theta, round(q_95, 3), round(coverage_pct, 3), round(bias_calc, 3)))
+  
+  }
+}
+
+colnames(df_results_scbs) = c("b", "theta", "q_95", "coverage", "bias")
+
+df_results_scbs_final = 
+  df_results_scbs %>%
+  left_join(sig_hats_LT_vec[sig_hats_LT_vec$sigma == "hat_3",], by = c("theta" = "thetas")) %>%
+  mutate(sigma_val = round(sigma_val, 2)) %>% 
+  left_join(filter(df_results_scbs[,c("theta", "b", "bias")], theta == 0), by = c("b" = "b")) %>% 
+  rename(theta = theta.x, bias = bias.y) %>%
+  select(b, q_95, bias, theta, coverage)
+
+
+print(round(Sys.time() - aaa), 3)
+
+# Getting the optimal banwidth under Ruppert (1995) with i.i.d. errors
+k_rups = numeric()
+for (iters in 1:1000){
+    w_is = rnorm(length(t))
+    Xn_sim = cos(2*pi*t/200) + w_is
+    k_rups = c(k_rups, dpill(t, Xn_sim))
+}
+k_rup = round(mean(k_rups))
+b_rup = round(k_rup/length(t), 3)
+
+```
+
+Table of coverage rates over bandwidth and $\theta$ grid: 
+
+```{r echo = FALSE}
+df_results_scbs_final %>% spread(key = theta, value = coverage) %>% 
+  kable(caption = "Table of coverage rates over bandwidth and theta grid:") 
+  
+```
+
+<br> 
+
+Results: <br>
+Our results tie out closely with Table 2 of Wu's paper. <br>
+Under the automatic bandwidth selector by Ruppert which minimizes MSE for iid errors, the optimal bandwidth is `r b_rup`. The optimal bandwidth adjusted is `r b_rup`. Under this bandwidth, the empirical coverage rates range from 0.949 to 0.955 for $\theta$ up to 0.5, indicating that the empirical coveraage is well-maintained. <br> 
+However, as $\theta$ increase, we would need to select larger bandwidths for ensure a valid 95% approximation, as indicated by the columns for $\theta =$ 0.8 or 0.9 where the 95% nominal coverage is not achieved until b = 0.10. <br>
+However, larger bandwidthss do come at the cost of higher bias, which consequently decreases the empirical coverage rate. This is observed by looking at the range of coverage rates across $\theta$ for b > 0.15 -- the empirical coverage rate drops off steeply to less than 70%, with bias increasing to almost 0.4, which represent 20% of the range of values the mean cosine series can take. <br>
+
+
