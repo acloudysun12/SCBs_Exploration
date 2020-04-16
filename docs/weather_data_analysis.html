@@ -435,10 +435,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreee798978bf49cc9995581fc7245ca7205e650a638targetblanke798978a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/e798978bf49cc9995581fc7245ca7205e650a638" target="_blank">e798978</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreefcf182124d954e8c864ef62ae2cb4891769fd70ftargetblankfcf1821a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/fcf182124d954e8c864ef62ae2cb4891769fd70f" target="_blank">fcf1821</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreee798978bf49cc9995581fc7245ca7205e650a638targetblanke798978a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreefcf182124d954e8c864ef62ae2cb4891769fd70ftargetblankfcf1821a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -447,7 +447,6 @@ Great! You are using Git for version control. Tracking code development and conn
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    analysis/.Rhistory
-    Ignored:    analysis/figure/
 
 Unstaged changes:
     Modified:   analysis/scbs_analysis_simulations.Rmd
@@ -489,6 +488,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/fcf182124d954e8c864ef62ae2cb4891769fd70f/analysis/weather_data_analysis.Rmd" target="_blank">fcf1821</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-04-16
+</td>
+<td>
+Data analysis results with SCBs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/acloudysun12/SCBs_Exploration/4f76cd66b26978cb2bab7851a4f7fe9eb02c3418/docs/weather_data_analysis.html" target="_blank">4f76cd6</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1244,63 +1277,13 @@ Adam Sun
 <p>We plot the quarterly temperature series along with their respective SCBs below.</p>
 <p><br></p>
 <p>We observe from the plots below that the local linear estiamtes and correponding 95% SCBs for the temperatures series broken out by quarter are not similar. This again is likely due to the large range of bandwidths (0.05 to 0.20) selected earlier. <br> Like with the yearly temperature series, we fit linear and quadratic models on all four seasonal yearly temperatures since 1850. <br> No linear nor quadratic model falls outside the range of the 95% SCB, for any quarterly temperature series. This suggests neither models are invlidated based on 95% SCB coverage alone. However, a quadratic model seems less plausible, especially for the Qtr1 temperature series since the fitted model actually show this convex curve sloping down to attain its minimum in 1897 before curving back up. <br> A linear model seems more reasonable for all 4 quarter temperature series, and their positive slopes across all quarters further support the fact that global temperatures have been rising since 1850.</p>
-<pre class="r"><code>q1_temps_post_1850 = ce_temps_q1_ts[time(ce_temps_q1_ts) &gt;= 1850] %&gt;% ts(start = 1850)
-mdl_lin_q1 = lm(q1_temps_post_1850 ~ time(q1_temps_post_1850))
-mdl_quad_q1 = lm(q1_temps_post_1850 ~ I(time(q1_temps_post_1850)^2) + time(q1_temps_post_1850))
-
-q2_temps_post_1850 = ce_temps_q2_ts[time(ce_temps_q2_ts) &gt;= 1850] %&gt;% ts(start = 1850)
-mdl_lin_q2 = lm(q2_temps_post_1850 ~ time(q2_temps_post_1850))
-mdl_quad_q2 = lm(q2_temps_post_1850 ~ I(time(q2_temps_post_1850)^2) + time(q2_temps_post_1850))
-
-q3_temps_post_1850 = ce_temps_q3_ts[time(ce_temps_q1_ts) &gt;= 1850] %&gt;% ts(start = 1850)
-mdl_lin_q3 = lm(q3_temps_post_1850 ~ time(q3_temps_post_1850))
-mdl_quad_q3 = lm(q3_temps_post_1850 ~ I(time(q3_temps_post_1850)^2) + time(q3_temps_post_1850))
-
-q4_temps_post_1850 = ce_temps_q4_ts[time(ce_temps_q4_ts) &gt;= 1850] %&gt;% ts(start = 1850)
-mdl_lin_q4 = lm(q4_temps_post_1850 ~ time(q4_temps_post_1850))
-mdl_quad_q4 = lm(q4_temps_post_1850 ~ I(time(q4_temps_post_1850)^2) + time(q4_temps_post_1850))
-
-
-plot(ce_temps_q1_ts, main = paste(&quot;Q1 temps with LL est. and SCB for optimal b = &quot;, round(k_final_q1/360, 3)))
-lines(as.numeric(years), SCBs_q1$loclin_fit, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q1$series_UB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q1$series_LB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_lin_q1), lwd = 2, lty = 2, col = &quot;purple&quot;)
-lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_quad_q1), lwd = 2, lty = 2, col = &quot;green2&quot;)
-legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;), 
-       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;), lty = c(2,2,2))
-
-plot(ce_temps_q2_ts, main = paste(&quot;Q2 temps with LL est. and SCB for optimal b = &quot;, round(k_final_q2/360, 3)))
-lines(as.numeric(years), SCBs_q2$loclin_fit, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q2$series_UB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q2$series_LB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q2), lwd = 2, lty = 2, col = &quot;purple&quot;)
-lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q2), lwd = 2, lty = 2, col = &quot;green2&quot;)
-legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;), 
-       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;), lty = c(2,2,2))
-
-plot(ce_temps_q3_ts, main = paste(&quot;Q3 temps with LL est. and SCB for optimal b = &quot;, round(k_final_q3/360, 3)))
-lines(as.numeric(years), SCBs_q3$loclin_fit, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q3$series_UB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q3$series_LB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q3), lwd = 2, lty = 2, col = &quot;purple&quot;)
-lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q3), lwd = 2, lty = 2, col = &quot;green2&quot;)
-legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;), 
-       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;), lty = c(2,2,2))
-
-plot(ce_temps_q4_ts, main = paste(&quot;Q4 temps with LL est. and SCB for optimal b = &quot;, round(k_final_q4/360, 3)))
-lines(as.numeric(years), SCBs_q4$loclin_fit, lwd = 2, lty = 1, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q4$series_UB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(x = as.numeric(years), y = SCBs_q4$series_LB, lwd = 2, lty = 2, col = &quot;coral&quot;)
-lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q4), lwd = 2, lty = 2, col = &quot;purple&quot;)
-lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q4), lwd = 2, lty = 2, col = &quot;green2&quot;)
-legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;), 
-       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;), lty = c(2,2,2))</code></pre>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <p>Playground/Additional Notes <br></p>
 <ul>
 <li>Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.</li>
 </ul>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <!-- ## Calculate coverage of actual data with 95% SCB for temperature series<br>  -->
 <p><br> <br></p>
