@@ -497,16 +497,15 @@ sig_sq_hat_2
 ```
 
 
-<!-- Playground <br> -->
+Playground/Additional Notes <br>
 
-<!-- Notes/Q's: <br> -->
-<!-- - Thoughts on playing with fake data, like suppose we added 2 degrees Celsius to all temps after 1990, etc. -->
+- Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.
 
 ```{r eval = FALSE, echo = FALSE}
-# ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) >= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
-# plot(ce_temps_yr_ts_fake)
-# lines(lowess(ce_temps_yr_ts_fake, f= 0.1), lwd = 2, col = 2)
-# lines(lowess(ce_temps_yr_ts_fake), lwd = 2, col = 4)
+ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) >= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
+plot(ce_temps_yr_ts_fake)
+lines(lowess(ce_temps_yr_ts_fake, f= 0.1), lwd = 2, col = 2)
+lines(lowess(ce_temps_yr_ts_fake), lwd = 2, col = 4)
 
 ```
 
