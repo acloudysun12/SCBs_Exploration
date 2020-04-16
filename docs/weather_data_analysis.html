@@ -435,10 +435,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreed330342cfa2eb3758ce4504fe50b5b772d6d8268targetblankd330342a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/d330342cfa2eb3758ce4504fe50b5b772d6d8268" target="_blank">d330342</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreee798978bf49cc9995581fc7245ca7205e650a638targetblanke798978a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/e798978bf49cc9995581fc7245ca7205e650a638" target="_blank">e798978</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreed330342cfa2eb3758ce4504fe50b5b772d6d8268targetblankd330342a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreee798978bf49cc9995581fc7245ca7205e650a638targetblanke798978a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -447,6 +447,7 @@ Great! You are using Git for version control. Tracking code development and conn
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    analysis/.Rhistory
+    Ignored:    analysis/figure/
 
 Unstaged changes:
     Modified:   analysis/scbs_analysis_simulations.Rmd
@@ -488,6 +489,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/e798978bf49cc9995581fc7245ca7205e650a638/analysis/weather_data_analysis.Rmd" target="_blank">e798978</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-04-16
+</td>
+<td>
+Data analysis results with SCBs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/acloudysun12/SCBs_Exploration/f6ed4fbb67e1bc0785743a05018ca27a718c838c/docs/weather_data_analysis.html" target="_blank">f6ed4fb</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1262,6 +1297,11 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q4), lwd =
 legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;), 
        col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;), lty = c(2,2,2))</code></pre>
 <p><br></p>
+<p>Playground/Additional Notes <br></p>
+<ul>
+<li>Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.</li>
+</ul>
+<p><br></p>
 <!-- ## Calculate coverage of actual data with 95% SCB for temperature series<br>  -->
 <p><br> <br></p>
 <!-- ## Estimating $\hat\sigma^2$ with SDF <br> -->
@@ -1272,10 +1312,6 @@ legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, 
 <!-- - Estimate of sigma_sq_hat should be 2*(area of periodogram), since it's calculated in range of $w \in (0, 1/2)$ but we want range  $w \in (-1/2, 1/2)$? <br> -->
 <!-- - Is my periodogram approach correct? Why is there mention of the spectral density function = $\sigma^2/(2\pi)$ in Part 5. oe this mean I shouldd multiply my periodogram estimate by $2\pi$? <br> -->
 <!-- - Should we use periodogram appraoch for variance estimate? -->
-<p>Playground/Additional Notes <br></p>
-<ul>
-<li>Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.</li>
-</ul>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
