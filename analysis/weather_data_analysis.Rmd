@@ -439,6 +439,20 @@ legend("bottomright", legend = c("SCB", "Linear", "Quadratic"),
 
 <br> 
 
+Playground/Additional Notes <br>
+
+- Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.
+
+```{r eval = FALSE, echo = FALSE}
+ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) >= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
+plot(ce_temps_yr_ts_fake)
+lines(lowess(ce_temps_yr_ts_fake, f= 0.1), lwd = 2, col = 2)
+lines(lowess(ce_temps_yr_ts_fake), lwd = 2, col = 4)
+
+```
+
+<br> 
+
 <!-- ## Calculate coverage of actual data with 95% SCB for temperature series<br>  -->
 
 ```{r eval = FALSE, echo = FALSE}
@@ -493,19 +507,6 @@ sig_sq_hat_1 = 2*sum(Iw_smooth_1$freq[1] * Iw_smooth_1$spec)
 sig_sq_hat_1
 sig_sq_hat_2 = 2*sum(Iw_smooth_2$freq[1] * Iw_smooth_2$spec)
 sig_sq_hat_2
-
-```
-
-
-Playground/Additional Notes <br>
-
-- Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.
-
-```{r eval = FALSE, echo = FALSE}
-ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) >= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
-plot(ce_temps_yr_ts_fake)
-lines(lowess(ce_temps_yr_ts_fake, f= 0.1), lwd = 2, col = 2)
-lines(lowess(ce_temps_yr_ts_fake), lwd = 2, col = 4)
 
 ```
 
