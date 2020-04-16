@@ -110,7 +110,7 @@ calc_SCBs = function(time_idx, series, sup_mus_boot, q_95, sig_hat, k_final){
 Notes: 
 - We consider finding the 95% Simultaneous Convidence Bands for annual mean temps, i.e. 1660 to 2019 has 360 data points.
 
-```{r}
+```{r echo = FALSE}
 
 ce_temps_path = "https://raw.githubusercontent.com/acloudysun12/SCBs_Exploration/master/data/ce_ssn_temp_mean_raw.txt"
 ce_temps = read.table(ce_temps_path, header = TRUE) # we ignore 1659 because not full year
@@ -151,7 +151,7 @@ Note/Q's: <br>
 - Applying Thm 3, we use $k_n$ = 360^(1/3) to estimate $\hat\sigma_1$, $\hat\sigma_2$, and $\hat\sigma_3$. <br>
 - We round $k_n$ = 360^(1/3) to the closest whole number = `r round(length(ce_temps_yr_ts)^(1/3))`. 
 
-```{r}
+```{r echo = FALSE}
 
 sigmas = calc_sig_hats_eq25(series = ce_temps_yr_ts, p = 1/3)
 
@@ -175,7 +175,7 @@ Notes/Q's: <br>
 - __Final bandwidth based on $2\hat\rho^{1/5}b_{rup}$,__ <br>
 - __We also try trying $b_{rup}$ +/- 0.025 (which means length of 9).__ <br>
 
-```{r}
+```{r echo = FALSE}
 years = time(ce_temps_yr_ts)
 
 k_final_0 = calc_k_final(years, ce_temps_yr_ts, sigmas$hat_3)$k_final
@@ -190,7 +190,7 @@ k_final_hi = k_final_0 + 9
 <br>
 
 __Final "optimal" bandwidths to try based on adjustments to Ruppert optimal bandwidth:__ <br> 
-__`r paste(round(c(k_final_0, k_final_lo, k_final_hi), 3), collapse = ", ")`__ <br>
+__`r paste(round(c(k_final_0, k_final_lo, k_final_hi)/length(years), 3), collapse = ", ")`__ <br>
 
 <br>
 
@@ -201,7 +201,7 @@ Notes/Q's: <br>
 - From here, we get an estimate of the SCB bandwidth for each $\hat b$ as $\hat\sigma \hat{q}_{0.95}(b)$. <br> 
 - Should we round bandwidth lengths to integer? Easier to interpret, but the locpoly function allows non-integer bandwidths. <br>
 
-```{r}
+```{r }
 set.seed(9980)
 
 years = time(ce_temps_yr_ts)
@@ -221,7 +221,6 @@ q_95_hi = calc_q95(sup_mus_boot_hi)
 SCBs_k_0 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_95_0,sigmas$hat_3, k_final_0)
 SCBs_k_lo = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_lo, q_95_lo, sigmas$hat_3, k_final_lo)
 SCBs_k_hi = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_hi, q_95_hi, sigmas$hat_3, k_final_hi)
-
 
 ```
 
@@ -244,7 +243,7 @@ __Coverage of actual data with 95% SCB for bandwidth length = `r round(k_final_h
 Notes/Q's: <br>
 - For each bandwidth tried, we plot time series, local linear estimates, and their SCBs. 
 
-```{r}
+```{r echo = FALSE}
 plot(ce_temps_yr_ts, main = paste("Temps with LL est. and 95% SCB for optimal bandwidth:", round(k_final_0/360, 3)))
 lines(as.numeric(years), SCBs_k_0$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_k_0$series_UB, lwd = 2, lty = 2, col = "coral")
@@ -287,7 +286,7 @@ legend("bottomright", legend = c("SCB", "Linear", "Quadratic"),
 ```
 
 
-# Data Aanalysis - Quarterly <br>
+# Data Analysis - Quarterly <br>
 
 We also produce the 95% SCBs for the temperatures for each season (denoted as quarters) and see if similar conclusions about trends in the yearly temperature series can be drawn here. <br>
 
@@ -298,7 +297,7 @@ Note/Q's: <br>
 - We use the locpoly function in R which estimates local polynomial fitting with Normal kernel weights. <br>
 - Again, we use $k_n$ = 360^(1/3) to estimate $\hat\sigma_3$ = the long-term SD $\hat\sigma$. <br>
 
-```{r}
+```{r echo = FALSE}
 
 ce_temps_q1_ts = ts(ce_temps[,2], frequency = 1, start = 1660)
 ce_temps_q2_ts = ts(ce_temps[,3], frequency = 1, start = 1660)
@@ -320,13 +319,13 @@ sig_hat_q4 = sigmas_q4$hat_3
 Results: <br>
 - Not surprisingly, different quarters have varying different long-term $\hat\sigma$s. 
 - The winter season (Quarter 1) has the highest SD at `r round(sig_hat_q1, 3)`. followed by spring, summer, and lastly autumn at `r round(sig_hat_q4, 3)`. <br>
-- All else equal, this suggests wider bands for winter and narrower bands for autumn.
+- All else equal, this suggests wider bands for winter and narrower bands for autumn. 
 
 <br> 
 
-## Calculate optimal bandwidth (Ruppert 1995) for temperature series by quarter <br>
+## Calculate bandwidth for temperature series by quarter <br>
 
-```{r}
+```{r echo = FALSE}
 years = time(ce_temps_yr_ts)
 
 k_final_q1 = calc_k_final(years, ce_temps_q1_ts, sig_hat_q1)$k_final
@@ -334,7 +333,18 @@ k_final_q2 = calc_k_final(years, ce_temps_q2_ts, sig_hat_q2)$k_final
 k_final_q3 = calc_k_final(years, ce_temps_q3_ts, sig_hat_q3)$k_final
 k_final_q4 = calc_k_final(years, ce_temps_q4_ts, sig_hat_q4)$k_final
 
+b_final_q1 = round(k_final_q1/length(years), 3)
+b_final_q2 = round(k_final_q2/length(years), 3)
+b_final_q3 = round(k_final_q3/length(years), 3)
+b_final_q4 = round(k_final_q4/length(years), 3)
+
+
 ```
+
+We notice a large discrepancy in the optimal bandwidth lengths for each the temperature series by quarter. <br>
+The optimal bandwidth for spring (Qtr2) is `r b_final_q2` (Ruppert's automatic bandwidth selector = `r round(dpill(years, ce_temps_q2_ts)/length(years), 3)`), while the optimal bandwidth for summer (Qtr3) is `r b_final_q3` (Ruppert bandwidth = `r round(dpill(years, ce_temps_q3_ts)/length(years), 3)`). TO RESEARCH -- WHY IS THIS THE CASE? <br>
+The optimal bandwidth for summer (Qtr3) is larger than 0.2, which we have shown in the simulation study to lower the nominal coverage due to higher bandwidths leading to higher bias. <br>
+As such, we will be careful with analyzing the Qtr3 temperature series.
 
 <br>
 
@@ -342,7 +352,7 @@ k_final_q4 = calc_k_final(years, ce_temps_q4_ts, sig_hat_q4)$k_final
 
 We plot the quarterly temperature series along with their respective SCBs below. 
 
-```{r}
+```{r echo = FALSE}
 
 years = time(ce_temps_yr_ts)
 
@@ -360,27 +370,69 @@ SCBs_q2 = calc_SCBs(years, ce_temps_q2_ts, sup_mus_boot_q2, calc_q95(sup_mus_boo
 SCBs_q3 = calc_SCBs(years, ce_temps_q3_ts, sup_mus_boot_q3, calc_q95(sup_mus_boot_q3), sig_hat_q3, k_final_q3)
 SCBs_q4 = calc_SCBs(years, ce_temps_q4_ts, sup_mus_boot_q4, calc_q95(sup_mus_boot_q4), sig_hat_q4, k_final_q4)
 
+```
+
+```{r eval = FALSE}
+
+q1_temps_post_1850 = ce_temps_q1_ts[time(ce_temps_q1_ts) >= 1850] %>% ts(start = 1850)
+mdl_lin_q1 = lm(q1_temps_post_1850 ~ time(q1_temps_post_1850))
+mdl_quad_q1 = lm(q1_temps_post_1850 ~ I(time(q1_temps_post_1850)^2) + time(q1_temps_post_1850))
+
+q2_temps_post_1850 = ce_temps_q2_ts[time(ce_temps_q2_ts) >= 1850] %>% ts(start = 1850)
+mdl_lin_q2 = lm(q2_temps_post_1850 ~ time(q2_temps_post_1850))
+mdl_quad_q2 = lm(q2_temps_post_1850 ~ I(time(q2_temps_post_1850)^2) + time(q2_temps_post_1850))
+
+q3_temps_post_1850 = ce_temps_q3_ts[time(ce_temps_q1_ts) >= 1850] %>% ts(start = 1850)
+mdl_lin_q3 = lm(q3_temps_post_1850 ~ time(q3_temps_post_1850))
+mdl_quad_q3 = lm(q3_temps_post_1850 ~ I(time(q3_temps_post_1850)^2) + time(q3_temps_post_1850))
+
+q4_temps_post_1850 = ce_temps_q4_ts[time(ce_temps_q4_ts) >= 1850] %>% ts(start = 1850)
+mdl_lin_q4 = lm(q4_temps_post_1850 ~ time(q4_temps_post_1850))
+mdl_quad_q4 = lm(q4_temps_post_1850 ~ I(time(q4_temps_post_1850)^2) + time(q4_temps_post_1850))
+
+
 plot(ce_temps_q1_ts, main = paste("Q1 temps with LL est. and SCB for optimal b = ", round(k_final_q1/360, 3)))
 lines(as.numeric(years), SCBs_q1$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_LB, lwd = 2, lty = 2, col = "coral")
+lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_lin_q1), lwd = 2, lty = 2, col = "purple")
+lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_quad_q1), lwd = 2, lty = 2, col = "green2")
+legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
+       col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
 plot(ce_temps_q2_ts, main = paste("Q2 temps with LL est. and SCB for optimal b = ", round(k_final_q2/360, 3)))
 lines(as.numeric(years), SCBs_q2$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_LB, lwd = 2, lty = 2, col = "coral")
+lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q2), lwd = 2, lty = 2, col = "purple")
+lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q2), lwd = 2, lty = 2, col = "green2")
+legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
+       col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
 plot(ce_temps_q3_ts, main = paste("Q3 temps with LL est. and SCB for optimal b = ", round(k_final_q3/360, 3)))
 lines(as.numeric(years), SCBs_q3$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_LB, lwd = 2, lty = 2, col = "coral")
+lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q3), lwd = 2, lty = 2, col = "purple")
+lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q3), lwd = 2, lty = 2, col = "green2")
+legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
+       col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
 plot(ce_temps_q4_ts, main = paste("Q4 temps with LL est. and SCB for optimal b = ", round(k_final_q4/360, 3)))
 lines(as.numeric(years), SCBs_q4$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_LB, lwd = 2, lty = 2, col = "coral")
+lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q4), lwd = 2, lty = 2, col = "purple")
+lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q4), lwd = 2, lty = 2, col = "green2")
+legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
+       col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
 ```
+
+We observe from the plots that the local linear estiamtes and correponding 95% SCBs for the temperatures series broken out by quarter are not similar. This again is likely due to the large range of bandwidths (0.05 to 0.20) selected earlier. <br>
+Like with the yearly temperature series, we fit linear and quadratic models on all four seasonal yearly temperatures since 1850. <br>
+No linear nor quadratic model falls outside the range of the 95% SCB, for any quarterly temperature series. This suggests neither models are invlidated based on 95% SCB coverage alone. However, a quadratic model seems less plausible, especially for the Qtr1 temperature series since the fitted model actually show this convex curve sloping down to attain its minimum in 1897 before curving back up. <br>
+A linear model seems more reasonable for all 4 quarter temperature series, and their positive slopes across all quarters further support the fact that global temperatures have been rising since 1850. 
 
 <br> 
 
