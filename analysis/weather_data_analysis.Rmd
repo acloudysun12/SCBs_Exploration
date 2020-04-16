@@ -372,6 +372,14 @@ SCBs_q4 = calc_SCBs(years, ce_temps_q4_ts, sup_mus_boot_q4, calc_q95(sup_mus_boo
 
 ```
 
+<br>
+
+We observe from the plots below that the local linear estiamtes and correponding 95% SCBs for the temperatures series broken out by quarter are not similar. This again is likely due to the large range of bandwidths (0.05 to 0.20) selected earlier. <br>
+Like with the yearly temperature series, we fit linear and quadratic models on all four seasonal yearly temperatures since 1850. <br>
+No linear nor quadratic model falls outside the range of the 95% SCB, for any quarterly temperature series. This suggests neither models are invlidated based on 95% SCB coverage alone. However, a quadratic model seems less plausible, especially for the Qtr1 temperature series since the fitted model actually show this convex curve sloping down to attain its minimum in 1897 before curving back up. <br>
+A linear model seems more reasonable for all 4 quarter temperature series, and their positive slopes across all quarters further support the fact that global temperatures have been rising since 1850. 
+
+
 ```{r eval = FALSE}
 
 q1_temps_post_1850 = ce_temps_q1_ts[time(ce_temps_q1_ts) >= 1850] %>% ts(start = 1850)
@@ -428,11 +436,6 @@ legend("bottomright", legend = c("SCB", "Linear", "Quadratic"),
        col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
 ```
-
-We observe from the plots that the local linear estiamtes and correponding 95% SCBs for the temperatures series broken out by quarter are not similar. This again is likely due to the large range of bandwidths (0.05 to 0.20) selected earlier. <br>
-Like with the yearly temperature series, we fit linear and quadratic models on all four seasonal yearly temperatures since 1850. <br>
-No linear nor quadratic model falls outside the range of the 95% SCB, for any quarterly temperature series. This suggests neither models are invlidated based on 95% SCB coverage alone. However, a quadratic model seems less plausible, especially for the Qtr1 temperature series since the fitted model actually show this convex curve sloping down to attain its minimum in 1897 before curving back up. <br>
-A linear model seems more reasonable for all 4 quarter temperature series, and their positive slopes across all quarters further support the fact that global temperatures have been rising since 1850. 
 
 <br> 
 
