@@ -380,7 +380,7 @@ No linear nor quadratic model falls outside the range of the 95% SCB, for any qu
 A linear model seems more reasonable for all 4 quarter temperature series, and their positive slopes across all quarters further support the fact that global temperatures have been rising since 1850. 
 
 
-```{r eval = FALSE}
+```{r echo = FALSE}
 
 q1_temps_post_1850 = ce_temps_q1_ts[time(ce_temps_q1_ts) >= 1850] %>% ts(start = 1850)
 mdl_lin_q1 = lm(q1_temps_post_1850 ~ time(q1_temps_post_1850))
@@ -443,7 +443,7 @@ Playground/Additional Notes <br>
 
 - Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.
 
-```{r eval = FALSE, echo = FALSE}
+```{r echo = FALSE}
 ce_temps_yr_ts_fake = ifelse(time(ce_temps_yr_ts) >= 1900, ce_temps_yr_ts + 2, ce_temps_yr_ts)
 plot(ce_temps_yr_ts_fake)
 lines(lowess(ce_temps_yr_ts_fake, f= 0.1), lwd = 2, col = 2)
