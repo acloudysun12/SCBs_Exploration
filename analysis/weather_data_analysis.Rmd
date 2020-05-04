@@ -491,7 +491,37 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q4), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
+
 ```
+
+<br>
+
+Is flat temperatures possible for annual temperatures of each season? i.e. Can temperatures be not changing under our 95% SCBs?
+
+```{r}
+
+print("Yearly avg annual temperatures")
+min(round(SCBs_k_0$series_UB[years>=1850], 3)) > max(round(SCBs_k_0$series_LB[years>=1850], 3))
+min(round(SCBs_k_0$series_UB[years>=1850], 3)) - max(round(SCBs_k_0$series_LB[years>=1850], 3))
+
+print("Q1 annual temperatures")
+min(round(SCBs_q1$series_UB[years>=1850], 3)) > max(round(SCBs_q1$series_LB[years>=1850], 3))
+min(round(SCBs_q1$series_UB[years>=1850], 3)) - max(round(SCBs_q1$series_LB[years>=1850], 3))
+
+print("Q2 annual temperatures")
+min(round(SCBs_q2$series_UB[years>=1850], 3)) > max(round(SCBs_q2$series_LB[years>=1850], 3))
+min(round(SCBs_q2$series_UB[years>=1850], 3)) - max(round(SCBs_q2$series_LB[years>=1850], 3))
+
+print("Q3 annual temperatures")
+min(round(SCBs_q3$series_UB[years>=1850], 3)) > max(round(SCBs_q3$series_LB[years>=1850], 3))
+min(round(SCBs_q3$series_UB[years>=1850], 3)) - max(round(SCBs_q3$series_LB[years>=1850], 3))
+
+print("Q4 annual temperatures")
+min(round(SCBs_q4$series_UB[years>=1850], 3)) > max(round(SCBs_q4$series_LB[years>=1850], 3))
+min(round(SCBs_q4$series_UB[years>=1850], 3)) - max(round(SCBs_q4$series_LB[years>=1850], 3))
+
+```
+
 
 <br> 
 
