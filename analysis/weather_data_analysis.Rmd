@@ -521,12 +521,15 @@ ce_temps_post_1850_long = ce_temps %>% gather(key = Qtr, value = Temp, -Year) %>
 
 mdl_temps_post_1850 = lm(Temp ~ Year*Qtr, data = ce_temps_post_1850_long)
 
+summary(mdl_temps_post_1850)
+
 anova(mdl_temps_post_1850)
 
 slopes = emtrends(mdl_temps_post_1850, 'Qtr', var = 'Year') #gets each slope
 slopes
 
 pairs(slopes)
+
 
 ```
 
