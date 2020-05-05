@@ -23,6 +23,7 @@ library(tseries)
 library(fracdiff)
 library(forecast)
 library(KernSmooth)
+library(emmeans)
 ```
 
 
@@ -190,7 +191,10 @@ Notes/Q's: <br>
 ```{r echo = FALSE}
 years = time(ce_temps_yr_ts)
 
-k_final_0 = calc_k_final(years, ce_temps_yr_ts, sigmas$hat_3)$k_final
+k_selection = calc_k_final(years, ce_temps_yr_ts, sigmas$hat_3)
+k_rup = dpill(years, ce_temps_yr_ts)
+k_selection$rho_hat
+k_final_0 = k_selection$k_final
 k_final_lo = k_final_0 - 9
 k_final_hi = k_final_0 + 9
 
@@ -199,16 +203,18 @@ k_final_hi = k_final_0 + 9
 # hist(rnorm(720, 0, .5), breaks = 20, main = "white noise")
 
 
-k_final_1 = calc_k_final(years, ce_temps_yr_ts, sigmas$hat_3, block_max_val = 10)$k_final
-k_final_1/k_final_0
-dpill(years, ce_temps_yr_ts, blockmax = 10)/dpill(years, ce_temps_yr_ts, blockmax = 5)
+# k_final_1 = calc_k_final(years, ce_temps_yr_ts, sigmas$hat_3, block_max_val = 10)$k_final
+# k_final_1/k_final_0
+# dpill(years, ce_temps_yr_ts, blockmax = 10)/dpill(years, ce_temps_yr_ts, blockmax = 5)
 
+ 
 
 ```
 <br>
 
 __Final "optimal" bandwidths to try based on adjustments to Ruppert optimal bandwidth:__ <br> 
 __`r paste(round(c(k_final_0, k_final_lo, k_final_hi)/length(years), 3), collapse = ", ")`__ <br>
+Ruppert bandwidth is `r round(k_rup/360, 3)`. $\rho$ used is `r round(k_selection$rho_hat, 3)`, $\nu$ used is `r round(k_selection$nu, 4)` <br>
 
 <br>
 
@@ -291,10 +297,13 @@ Perhaps more interestingly, that using our 95% SCBs, we can conclude that yearly
 
 ce_temps_post_1850 = ce_temps_yr_ts[time(ce_temps_yr_ts) >= 1850] %>% ts(start = 1850)
 mdl_lin = lm(ce_temps_post_1850 ~ time(ce_temps_post_1850))
+summary(mdl_lin)
 mdl_quad = lm(ce_temps_post_1850 ~ I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
+summary(mdl_quad)
 mdl_cubic = lm(ce_temps_post_1850 ~ 
                  I(time(ce_temps_post_1850)^3) + I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
-mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
+summary(mdl_cubic)
+0# mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
 
 plot(ce_temps_yr_ts, main = paste("Temps with LL est, 95% SCB, and model fits since 1850"), 
      col = alpha("black", 0.5), xlim = c(1850, 2020))
@@ -303,10 +312,10 @@ lines(x = as.numeric(years), y = SCBs_k_0$series_UB, lwd = 2, lty = 2, col = alp
 lines(x = as.numeric(years), y = SCBs_k_0$series_LB, lwd = 2, lty = 2, col = alpha("coral", 0.5))
 lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_lin), lwd = 2, lty = 2, col = "purple")
 lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_quad), lwd = 2, lty = 2, col = "green2")
-lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2, lty = 2, col = "orange3")
-lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = "black")
-legend("bottomright", legend = c("SCB", "Linear", "Quadratic", "Cubic", "Isotonic"), 
-       col = c("coral", "purple", "green2", "orange3", "black"), lty = c(2,2,2,2,3))
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2, lty = 2, col = "chocolate3")
+# lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = "black")
+legend("bottomright", legend = c("SCB", "Linear", "Quadratic", "Cubic"), 
+       col = c("coral", "purple", "green2", "chocolate3"), lty = c(2,2,2,2))
 
 ```
 
@@ -438,24 +447,29 @@ q1_temps_post_1850 = ce_temps_q1_ts[time(ce_temps_q1_ts) >= 1850] %>% ts(start =
 mdl_lin_q1 = lm(q1_temps_post_1850 ~ time(q1_temps_post_1850))
 mdl_quad_q1 = lm(q1_temps_post_1850 ~ I(time(q1_temps_post_1850)^2) + time(q1_temps_post_1850))
 summary(mdl_lin_q1)
+summary(mdl_quad_q1)
 
 q2_temps_post_1850 = ce_temps_q2_ts[time(ce_temps_q2_ts) >= 1850] %>% ts(start = 1850)
 mdl_lin_q2 = lm(q2_temps_post_1850 ~ time(q2_temps_post_1850))
 mdl_quad_q2 = lm(q2_temps_post_1850 ~ I(time(q2_temps_post_1850)^2) + time(q2_temps_post_1850))
 summary(mdl_lin_q2)
+summary(mdl_quad_q2)
 
 q3_temps_post_1850 = ce_temps_q3_ts[time(ce_temps_q1_ts) >= 1850] %>% ts(start = 1850)
 mdl_lin_q3 = lm(q3_temps_post_1850 ~ time(q3_temps_post_1850))
 mdl_quad_q3 = lm(q3_temps_post_1850 ~ I(time(q3_temps_post_1850)^2) + time(q3_temps_post_1850))
 summary(mdl_lin_q3)
+summary(mdl_quad_q3)
 
 q4_temps_post_1850 = ce_temps_q4_ts[time(ce_temps_q4_ts) >= 1850] %>% ts(start = 1850)
 mdl_lin_q4 = lm(q4_temps_post_1850 ~ time(q4_temps_post_1850))
 mdl_quad_q4 = lm(q4_temps_post_1850 ~ I(time(q4_temps_post_1850)^2) + time(q4_temps_post_1850))
 summary(mdl_lin_q4)
+summary(mdl_quad_q4)
 
 
-plot(ce_temps_q1_ts, main = paste("Q1 temps with LL est. and SCB for optimal b = ", round(k_final_q1/360, 3)))
+plot(ce_temps_q1_ts, xlim = c(1850, 2020), 
+     main = paste("Q1 temps with LL est. and SCB for optimal b = ", round(k_final_q1/360, 3)))
 lines(as.numeric(years), SCBs_q1$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -464,7 +478,8 @@ lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_quad_q1), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
-plot(ce_temps_q2_ts, main = paste("Q2 temps with LL est. and SCB for optimal b = ", round(k_final_q2/360, 3)))
+plot(ce_temps_q2_ts, xlim = c(1850, 2020), 
+     main = paste("Q2 temps with LL est. and SCB for optimal b = ", round(k_final_q2/360, 3)))
 lines(as.numeric(years), SCBs_q2$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -473,7 +488,8 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q2), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
-plot(ce_temps_q3_ts, main = paste("Q3 temps with LL est. and SCB for optimal b = ", round(k_final_q3/360, 3)))
+plot(ce_temps_q3_ts, xlim = c(1850, 2020), 
+     main = paste("Q3 temps with LL est. and SCB for optimal b = ", round(k_final_q3/360, 3)))
 lines(as.numeric(years), SCBs_q3$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -482,7 +498,8 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q3), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2))
 
-plot(ce_temps_q4_ts, main = paste("Q4 temps with LL est. and SCB for optimal b = ", round(k_final_q4/360, 3)))
+plot(ce_temps_q4_ts, xlim = c(1850, 2020), 
+     main = paste("Q4 temps with LL est. and SCB for optimal b = ", round(k_final_q4/360, 3)))
 lines(as.numeric(years), SCBs_q4$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -496,27 +513,56 @@ legend("bottomright", legend = c("SCB", "Linear", "Quadratic"),
 
 <br>
 
-Is flat temperatures possible for annual temperatures of each season? i.e. Can temperatures be not changing under our 95% SCBs?
+Test whether the coefficients of linear trends are statistically significantly different. ANOVA
 
 ```{r}
 
+ce_temps_post_1850_long = ce_temps %>% gather(key = Qtr, value = Temp, -Year) %>% filter(Year >= 1850)
+
+mdl_temps_post_1850 = lm(Temp ~ Year*Qtr, data = ce_temps_post_1850_long)
+
+anova(mdl_temps_post_1850)
+
+slopes = emtrends(mdl_temps_post_1850, 'Qtr', var = 'Year') #gets each slope
+slopes
+
+pairs(slopes)
+
+```
+
+<br>
+
+Is flat temperatures possible for annual temperatures of each season? i.e. Can temperatures be not changing under our 95% SCBs?
+
+```{r echo = TRUE}
+
 print("Yearly avg annual temperatures")
+min(round(SCBs_k_0$series_UB[years>=1850], 3))
+max(round(SCBs_k_0$series_LB[years>=1850], 3))
 min(round(SCBs_k_0$series_UB[years>=1850], 3)) > max(round(SCBs_k_0$series_LB[years>=1850], 3))
 min(round(SCBs_k_0$series_UB[years>=1850], 3)) - max(round(SCBs_k_0$series_LB[years>=1850], 3))
 
 print("Q1 annual temperatures")
+min(round(SCBs_q1$series_UB[years>=1850], 3))
+max(round(SCBs_q1$series_LB[years>=1850], 3))
 min(round(SCBs_q1$series_UB[years>=1850], 3)) > max(round(SCBs_q1$series_LB[years>=1850], 3))
 min(round(SCBs_q1$series_UB[years>=1850], 3)) - max(round(SCBs_q1$series_LB[years>=1850], 3))
 
 print("Q2 annual temperatures")
+min(round(SCBs_q2$series_UB[years>=1850], 3))
+max(round(SCBs_q2$series_LB[years>=1850], 3))
 min(round(SCBs_q2$series_UB[years>=1850], 3)) > max(round(SCBs_q2$series_LB[years>=1850], 3))
 min(round(SCBs_q2$series_UB[years>=1850], 3)) - max(round(SCBs_q2$series_LB[years>=1850], 3))
 
 print("Q3 annual temperatures")
+min(round(SCBs_q3$series_UB[years>=1850], 3))
+max(round(SCBs_q3$series_LB[years>=1850], 3))
 min(round(SCBs_q3$series_UB[years>=1850], 3)) > max(round(SCBs_q3$series_LB[years>=1850], 3))
 min(round(SCBs_q3$series_UB[years>=1850], 3)) - max(round(SCBs_q3$series_LB[years>=1850], 3))
 
 print("Q4 annual temperatures")
+min(round(SCBs_q4$series_UB[years>=1850], 3))
+max(round(SCBs_q4$series_LB[years>=1850], 3))
 min(round(SCBs_q4$series_UB[years>=1850], 3)) > max(round(SCBs_q4$series_LB[years>=1850], 3))
 min(round(SCBs_q4$series_UB[years>=1850], 3)) - max(round(SCBs_q4$series_LB[years>=1850], 3))
 
