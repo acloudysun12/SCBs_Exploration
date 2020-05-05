@@ -306,7 +306,7 @@ summary(mdl_cubic)
 0# mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
 
 plot(ce_temps_yr_ts, main = paste("Temps with LL est, 95% SCB, and model fits since 1850"), 
-     col = alpha("black", 0.5), xlim = c(1850, 2020))
+     col = alpha("black", 0.5), xlim = c(1850, 2020), ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_k_0$loclin_fit, lwd = 2, lty = 1, col = alpha("coral", 0.5))
 lines(x = as.numeric(years), y = SCBs_k_0$series_UB, lwd = 2, lty = 2, col = alpha("coral", 0.5))
 lines(x = as.numeric(years), y = SCBs_k_0$series_LB, lwd = 2, lty = 2, col = alpha("coral", 0.5))
@@ -468,45 +468,43 @@ summary(mdl_lin_q4)
 summary(mdl_quad_q4)
 
 
-plot(ce_temps_q1_ts, xlim = c(1850, 2020), 
-     main = paste("Q1 temps with LL est. and SCB for optimal b = ", round(k_final_q1/360, 3)))
+par(mfrow=c(1,2))
+
+plot(ce_temps_q1_ts, xlim = c(1850, 2020), main = "Q1 temps with LL est. and SCBs",  ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q1$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_LB, lwd = 2, lty = 2, col = "coral")
 lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_lin_q1), lwd = 2, lty = 2, col = "purple")
 lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_quad_q1), lwd = 2, lty = 2, col = "green2")
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
-       col = c("coral", "purple", "green2"), lty = c(2,2,2))
+       col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
-plot(ce_temps_q2_ts, xlim = c(1850, 2020), 
-     main = paste("Q2 temps with LL est. and SCB for optimal b = ", round(k_final_q2/360, 3)))
+plot(ce_temps_q2_ts, xlim = c(1850, 2020), main = "Q2 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q2$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_LB, lwd = 2, lty = 2, col = "coral")
 lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q2), lwd = 2, lty = 2, col = "purple")
 lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q2), lwd = 2, lty = 2, col = "green2")
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
-       col = c("coral", "purple", "green2"), lty = c(2,2,2))
+       col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
-plot(ce_temps_q3_ts, xlim = c(1850, 2020), 
-     main = paste("Q3 temps with LL est. and SCB for optimal b = ", round(k_final_q3/360, 3)))
+plot(ce_temps_q3_ts, xlim = c(1850, 2020), main = "Q3 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q3$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_LB, lwd = 2, lty = 2, col = "coral")
 lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q3), lwd = 2, lty = 2, col = "purple")
 lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q3), lwd = 2, lty = 2, col = "green2")
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
-       col = c("coral", "purple", "green2"), lty = c(2,2,2))
+       col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
-plot(ce_temps_q4_ts, xlim = c(1850, 2020), 
-     main = paste("Q4 temps with LL est. and SCB for optimal b = ", round(k_final_q4/360, 3)))
+plot(ce_temps_q4_ts, xlim = c(1850, 2020), main = "Q4 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q4$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_LB, lwd = 2, lty = 2, col = "coral")
 lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_lin_q4), lwd = 2, lty = 2, col = "purple")
 lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q4), lwd = 2, lty = 2, col = "green2")
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
-       col = c("coral", "purple", "green2"), lty = c(2,2,2))
+       col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
 
 ```
