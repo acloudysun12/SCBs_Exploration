@@ -344,7 +344,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-05-04
+<strong>Last updated:</strong> 2020-05-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -435,10 +435,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreed32a72b846adfa80b7d88f7cc8c95b2e7c785c1ftargetblankd32a72ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/d32a72b846adfa80b7d88f7cc8c95b2e7c785c1f" target="_blank">d32a72b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree4375242bd7f8b666fda9e2b11b4c125f737e0aectargetblank4375242a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/4375242bd7f8b666fda9e2b11b4c125f737e0aec" target="_blank">4375242</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtreed32a72b846adfa80b7d88f7cc8c95b2e7c785c1ftargetblankd32a72ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree4375242bd7f8b666fda9e2b11b4c125f737e0aectargetblank4375242a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -491,6 +491,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/4375242bd7f8b666fda9e2b11b4c125f737e0aec/analysis/weather_data_analysis.Rmd" target="_blank">4375242</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-05
+</td>
+<td>
+updated results with F test etc for qtrs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/acloudysun12/SCBs_Exploration/a2b3887085d417d7e520c1647efce4cdfda4a260/docs/weather_data_analysis.html" target="_blank">a2b3887</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1067,10 +1101,9 @@ Adam Sun
 <div id="calculate-optimal-bandwidth-rupeprt-1995-for-our-mean-temperature-series-mu_t" class="section level2">
 <h2>Calculate optimal bandwidth (Rupeprt 1995) for our mean temperature series <span class="math inline">\(\mu_t\)</span> <br></h2>
 <p>Notes/Q’s: <br> - Use function dpill() to automatically select the bandwidth proposed by Ruppert (1995) for minimizing MSE. <br> - Maybe also try range of bandwidths higher/lower than Ruppert ideal bandwidth for exploration. <br> - Get variance correction factor (<span class="math inline">\(\hat\rho\)</span>) for each bandwidth based on step (a) of 4.1: Implementation. <br> - <span class="math inline">\(\hat\nu\)</span> based on the sample variance of the errors (observed - fitted local linear estimate based on bandwidth) <br> - <strong>Final bandwidth based on <span class="math inline">\(2\hat\rho^{1/5}b_{rup}\)</span>,</strong> <br> - <strong>We also try trying <span class="math inline">\(b_{rup}\)</span> +/- 0.025 (which means length of 9).</strong> <br></p>
-<pre><code>[1] 0.462738</code></pre>
-<pre><code>[1] 0.4495169</code></pre>
+<pre><code>[1] 1.858558</code></pre>
 <p><br></p>
-<p><strong>Final “optimal” bandwidths to try based on adjustments to Ruppert optimal bandwidth:</strong> <br> <strong>0.07, 0.045, 0.095</strong> <br></p>
+<p><strong>Final “optimal” bandwidths to try based on adjustments to Ruppert optimal bandwidth:</strong> <br> <strong>0.07, 0.045, 0.095</strong> <br> Ruppert bandwidth is 0.031. <span class="math inline">\(\rho\)</span> used is 1.859, <span class="math inline">\(\nu\)</span> used is 0.3205 <br></p>
 <p><br></p>
 </div>
 <div id="bootstrapping-to-estimate-the-95th-percentile-hat-q_95" class="section level2">
@@ -1234,22 +1267,82 @@ Adam Sun
 <p>With our SCBs, we can now attempt to fit different models through the temperature series. If they fall within the bounds of 95% SCB, then this suggests these trends are probable models to predict the true trend of yearly temperatures. <br> For the temperature data since 1850, we fit a linear model (purple) and a quadratic model (green) and observe both lines falling within the bounds of the SCBs, indicating they are possible candidates to model the temperature series. <br> We also fit an isotonic model to the series since 1850 and note that it has Perhaps more interestingly, that using our 95% SCBs, we can conclude that yearly temperatures have not been constant since 1850. Since the upper limit of the 95% SCB in 1850, 9.7, is smaller than the lower limit of the 95% SCB in 2019,9.945, there does not exist a horizontal line which can be drawn from 1850 to 2019 that which would be covered by the SCBs.</p>
 <pre class="r"><code>ce_temps_post_1850 = ce_temps_yr_ts[time(ce_temps_yr_ts) &gt;= 1850] %&gt;% ts(start = 1850)
 mdl_lin = lm(ce_temps_post_1850 ~ time(ce_temps_post_1850))
-mdl_quad = lm(ce_temps_post_1850 ~ I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
-mdl_cubic = lm(ce_temps_post_1850 ~ 
-                 I(time(ce_temps_post_1850)^3) + I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
-mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
+summary(mdl_lin)</code></pre>
+<pre><code>
+Call:
+lm(formula = ce_temps_post_1850 ~ time(ce_temps_post_1850))
 
-plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est, 95% SCB, and model fits since 1850&quot;), 
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.77264 -0.36017  0.01951  0.44399  1.05218 
+
+Coefficients:
+                           Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)              -3.6832354  1.6820749  -2.190   0.0299 *  
+time(ce_temps_post_1850)  0.0068020  0.0008692   7.825 5.38e-13 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5562 on 168 degrees of freedom
+Multiple R-squared:  0.2671,    Adjusted R-squared:  0.2628 
+F-statistic: 61.23 on 1 and 168 DF,  p-value: 5.383e-13</code></pre>
+<pre class="r"><code>mdl_quad = lm(ce_temps_post_1850 ~ I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
+summary(mdl_quad)</code></pre>
+<pre><code>
+Call:
+lm(formula = ce_temps_post_1850 ~ I(time(ce_temps_post_1850)^2) + 
+    time(ce_temps_post_1850))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.81068 -0.34449 -0.00432  0.38904  1.15066 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)                    2.080e+02  7.248e+01   2.870  0.00463 **
+I(time(ce_temps_post_1850)^2)  5.661e-05  1.937e-05   2.922  0.00396 **
+time(ce_temps_post_1850)      -2.122e-01  7.497e-02  -2.831  0.00521 **
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5441 on 167 degrees of freedom
+Multiple R-squared:  0.3028,    Adjusted R-squared:  0.2944 
+F-statistic: 36.26 on 2 and 167 DF,  p-value: 8.352e-14</code></pre>
+<pre class="r"><code>mdl_cubic = lm(ce_temps_post_1850 ~ 
+                 I(time(ce_temps_post_1850)^3) + I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
+summary(mdl_cubic)</code></pre>
+<pre><code>
+Call:
+lm(formula = ce_temps_post_1850 ~ I(time(ce_temps_post_1850)^3) + 
+    I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.83557 -0.33813  0.00001  0.39547  1.17204 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                   -2.377e+03  3.255e+03  -0.730    0.466
+I(time(ce_temps_post_1850)^3)  3.575e-07  4.501e-07   0.794    0.428
+I(time(ce_temps_post_1850)^2) -2.018e-03  2.612e-03  -0.773    0.441
+time(ce_temps_post_1850)       3.800e+00  5.051e+00   0.752    0.453
+
+Residual standard error: 0.5447 on 166 degrees of freedom
+Multiple R-squared:  0.3054,    Adjusted R-squared:  0.2929 
+F-statistic: 24.33 on 3 and 166 DF,  p-value: 4.222e-13</code></pre>
+<pre class="r"><code>0# mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est, 95% SCB, and model fits since 1850&quot;), 
      col = alpha(&quot;black&quot;, 0.5), xlim = c(1850, 2020))
 lines(as.numeric(years), SCBs_k_0$loclin_fit, lwd = 2, lty = 1, col = alpha(&quot;coral&quot;, 0.5))
 lines(x = as.numeric(years), y = SCBs_k_0$series_UB, lwd = 2, lty = 2, col = alpha(&quot;coral&quot;, 0.5))
 lines(x = as.numeric(years), y = SCBs_k_0$series_LB, lwd = 2, lty = 2, col = alpha(&quot;coral&quot;, 0.5))
 lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_lin), lwd = 2, lty = 2, col = &quot;purple&quot;)
 lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_quad), lwd = 2, lty = 2, col = &quot;green2&quot;)
-lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2, lty = 2, col = &quot;orange3&quot;)
-lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = &quot;black&quot;)
-legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;, &quot;Cubic&quot;, &quot;Isotonic&quot;), 
-       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;, &quot;orange3&quot;, &quot;black&quot;), lty = c(2,2,2,2,3))</code></pre>
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2, lty = 2, col = &quot;chocolate3&quot;)
+# lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = &quot;black&quot;)
+legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;, &quot;Cubic&quot;), 
+       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;, &quot;chocolate3&quot;), lty = c(2,2,2,2))</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
@@ -1352,6 +1445,24 @@ Multiple R-squared:  0.03511,   Adjusted R-squared:  0.02937
 F-statistic: 6.114 on 1 and 168 DF,  p-value: 0.01441</code></pre>
 <pre><code>
 Call:
+lm(formula = q1_temps_post_1850 ~ I(time(q1_temps_post_1850)^2) + 
+    time(q1_temps_post_1850))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.4973 -0.8203  0.1764  0.8788  2.8350 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                    2.358e+02  1.669e+02   1.413    0.160
+I(time(q1_temps_post_1850)^2)  6.444e-05  4.460e-05   1.445    0.150
+time(q1_temps_post_1850)      -2.445e-01  1.726e-01  -1.416    0.159
+
+Residual standard error: 1.253 on 167 degrees of freedom
+Multiple R-squared:  0.04702,   Adjusted R-squared:  0.03561 
+F-statistic:  4.12 on 2 and 167 DF,  p-value: 0.01792</code></pre>
+<pre><code>
+Call:
 lm(formula = q2_temps_post_1850 ~ time(q2_temps_post_1850))
 
 Residuals:
@@ -1368,6 +1479,26 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 Residual standard error: 0.7826 on 168 degrees of freedom
 Multiple R-squared:  0.1644,    Adjusted R-squared:  0.1594 
 F-statistic: 33.05 on 1 and 168 DF,  p-value: 4.135e-08</code></pre>
+<pre><code>
+Call:
+lm(formula = q2_temps_post_1850 ~ I(time(q2_temps_post_1850)^2) + 
+    time(q2_temps_post_1850))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.21396 -0.45004 -0.00165  0.56157  2.14715 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                    1.778e+02  1.036e+02   1.717   0.0879 .
+I(time(q2_temps_post_1850)^2)  4.895e-05  2.769e-05   1.768   0.0790 .
+time(q2_temps_post_1850)      -1.823e-01  1.071e-01  -1.702   0.0906 .
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.7777 on 167 degrees of freedom
+Multiple R-squared:  0.1797,    Adjusted R-squared:  0.1699 
+F-statistic:  18.3 on 2 and 167 DF,  p-value: 6.528e-08</code></pre>
 <pre><code>
 Call:
 lm(formula = q3_temps_post_1850 ~ time(q3_temps_post_1850))
@@ -1388,6 +1519,26 @@ Multiple R-squared:  0.08972,   Adjusted R-squared:  0.0843
 F-statistic: 16.56 on 1 and 168 DF,  p-value: 7.248e-05</code></pre>
 <pre><code>
 Call:
+lm(formula = q3_temps_post_1850 ~ I(time(q3_temps_post_1850)^2) + 
+    time(q3_temps_post_1850))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.70658 -0.57862 -0.00065  0.44282  2.24803 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                    2.510e+02  1.064e+02   2.359   0.0195 *
+I(time(q3_temps_post_1850)^2)  6.565e-05  2.844e-05   2.309   0.0222 *
+time(q3_temps_post_1850)      -2.489e-01  1.100e-01  -2.262   0.0250 *
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.7987 on 167 degrees of freedom
+Multiple R-squared:  0.1179,    Adjusted R-squared:  0.1073 
+F-statistic: 11.16 on 2 and 167 DF,  p-value: 2.832e-05</code></pre>
+<pre><code>
+Call:
 lm(formula = q4_temps_post_1850 ~ time(q4_temps_post_1850))
 
 Residuals:
@@ -1404,6 +1555,26 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 Residual standard error: 0.7445 on 168 degrees of freedom
 Multiple R-squared:  0.3129,    Adjusted R-squared:  0.3088 
 F-statistic: 76.49 on 1 and 168 DF,  p-value: 2.223e-15</code></pre>
+<pre><code>
+Call:
+lm(formula = q4_temps_post_1850 ~ I(time(q4_temps_post_1850)^2) + 
+    time(q4_temps_post_1850))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.15547 -0.43591  0.05914  0.43551  1.76716 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                    1.676e+02  9.851e+01   1.701   0.0907 .
+I(time(q4_temps_post_1850)^2)  4.741e-05  2.633e-05   1.800   0.0736 .
+time(q4_temps_post_1850)      -1.733e-01  1.019e-01  -1.701   0.0909 .
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.7395 on 167 degrees of freedom
+Multiple R-squared:  0.3259,    Adjusted R-squared:  0.3179 
+F-statistic: 40.38 on 2 and 167 DF,  p-value: 4.964e-15</code></pre>
 <p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
@@ -1568,33 +1739,89 @@ Adam Sun
 </div>
 </div>
 <p><br></p>
+<p>Test whether the coefficients of linear trends are statistically significantly different. ANOVA</p>
+<pre class="r"><code>ce_temps_post_1850_long = ce_temps %&gt;% gather(key = Qtr, value = Temp, -Year) %&gt;% filter(Year &gt;= 1850)
+
+mdl_temps_post_1850 = lm(Temp ~ Year*Qtr, data = ce_temps_post_1850_long)
+
+anova(mdl_temps_post_1850)</code></pre>
+<pre><code>Analysis of Variance Table
+
+Response: Temp
+           Df  Sum Sq Mean Sq   F value  Pr(&gt;F)    
+Year        1    75.8    75.8   89.1339 &lt; 2e-16 ***
+Qtr         3 10981.3  3660.4 4306.2483 &lt; 2e-16 ***
+Year:Qtr    3     7.4     2.5    2.8851 0.03501 *  
+Residuals 672   571.2     0.9                      
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>slopes = emtrends(mdl_temps_post_1850, &#39;Qtr&#39;, var = &#39;Year&#39;) #gets each slope
+slopes</code></pre>
+<pre><code> Qtr  Year.trend      SE  df lower.CL upper.CL
+ Qtr1    0.00486 0.00144 672  0.00203  0.00769
+ Qtr2    0.00703 0.00144 672  0.00420  0.00986
+ Qtr3    0.00514 0.00144 672  0.00231  0.00797
+ Qtr4    0.01018 0.00144 672  0.00735  0.01301
+
+Confidence level used: 0.95 </code></pre>
+<pre class="r"><code>pairs(slopes)</code></pre>
+<pre><code> contrast     estimate      SE  df t.ratio p.value
+ Qtr1 - Qtr2 -0.002175 0.00204 672 -1.068  0.7095 
+ Qtr1 - Qtr3 -0.000288 0.00204 672 -0.141  0.9990 
+ Qtr1 - Qtr4 -0.005320 0.00204 672 -2.611  0.0456 
+ Qtr2 - Qtr3  0.001888 0.00204 672  0.926  0.7908 
+ Qtr2 - Qtr4 -0.003144 0.00204 672 -1.543  0.4123 
+ Qtr3 - Qtr4 -0.005032 0.00204 672 -2.469  0.0657 
+
+P value adjustment: tukey method for comparing a family of 4 estimates </code></pre>
+<p><br></p>
 <p>Is flat temperatures possible for annual temperatures of each season? i.e. Can temperatures be not changing under our 95% SCBs?</p>
 <pre class="r"><code>print(&quot;Yearly avg annual temperatures&quot;)</code></pre>
 <pre><code>[1] &quot;Yearly avg annual temperatures&quot;</code></pre>
+<pre class="r"><code>min(round(SCBs_k_0$series_UB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 9.675</code></pre>
+<pre class="r"><code>max(round(SCBs_k_0$series_LB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 9.945</code></pre>
 <pre class="r"><code>min(round(SCBs_k_0$series_UB[years&gt;=1850], 3)) &gt; max(round(SCBs_k_0$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] FALSE</code></pre>
 <pre class="r"><code>min(round(SCBs_k_0$series_UB[years&gt;=1850], 3)) - max(round(SCBs_k_0$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] -0.27</code></pre>
 <pre class="r"><code>print(&quot;Q1 annual temperatures&quot;)</code></pre>
 <pre><code>[1] &quot;Q1 annual temperatures&quot;</code></pre>
+<pre class="r"><code>min(round(SCBs_q1$series_UB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 4.35</code></pre>
+<pre class="r"><code>max(round(SCBs_q1$series_LB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 4.193</code></pre>
 <pre class="r"><code>min(round(SCBs_q1$series_UB[years&gt;=1850], 3)) &gt; max(round(SCBs_q1$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] TRUE</code></pre>
 <pre class="r"><code>min(round(SCBs_q1$series_UB[years&gt;=1850], 3)) - max(round(SCBs_q1$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] 0.157</code></pre>
 <pre class="r"><code>print(&quot;Q2 annual temperatures&quot;)</code></pre>
 <pre><code>[1] &quot;Q2 annual temperatures&quot;</code></pre>
+<pre class="r"><code>min(round(SCBs_q2$series_UB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 9.002</code></pre>
+<pre class="r"><code>max(round(SCBs_q2$series_LB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 8.14</code></pre>
 <pre class="r"><code>min(round(SCBs_q2$series_UB[years&gt;=1850], 3)) &gt; max(round(SCBs_q2$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] TRUE</code></pre>
 <pre class="r"><code>min(round(SCBs_q2$series_UB[years&gt;=1850], 3)) - max(round(SCBs_q2$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] 0.862</code></pre>
 <pre class="r"><code>print(&quot;Q3 annual temperatures&quot;)</code></pre>
 <pre><code>[1] &quot;Q3 annual temperatures&quot;</code></pre>
+<pre class="r"><code>min(round(SCBs_q3$series_UB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 15.589</code></pre>
+<pre class="r"><code>max(round(SCBs_q3$series_LB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 15.726</code></pre>
 <pre class="r"><code>min(round(SCBs_q3$series_UB[years&gt;=1850], 3)) &gt; max(round(SCBs_q3$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] FALSE</code></pre>
 <pre class="r"><code>min(round(SCBs_q3$series_UB[years&gt;=1850], 3)) - max(round(SCBs_q3$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] -0.137</code></pre>
 <pre class="r"><code>print(&quot;Q4 annual temperatures&quot;)</code></pre>
 <pre><code>[1] &quot;Q4 annual temperatures&quot;</code></pre>
+<pre class="r"><code>min(round(SCBs_q4$series_UB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 9.912</code></pre>
+<pre class="r"><code>max(round(SCBs_q4$series_LB[years&gt;=1850], 3))</code></pre>
+<pre><code>[1] 10.75</code></pre>
 <pre class="r"><code>min(round(SCBs_q4$series_UB[years&gt;=1850], 3)) &gt; max(round(SCBs_q4$series_LB[years&gt;=1850], 3))</code></pre>
 <pre><code>[1] FALSE</code></pre>
 <pre class="r"><code>min(round(SCBs_q4$series_UB[years&gt;=1850], 3)) - max(round(SCBs_q4$series_LB[years&gt;=1850], 3))</code></pre>
@@ -1604,7 +1831,7 @@ Adam Sun
 <ul>
 <li>Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.</li>
 </ul>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <!-- ## Calculate coverage of actual data with 95% SCB for temperature series<br>  -->
 <p><br> <br></p>
@@ -1641,32 +1868,35 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] KernSmooth_2.23-16 forecast_8.9       fracdiff_1.4-2    
- [4] tseries_0.10-47    scales_1.0.0       forcats_0.3.0     
- [7] stringr_1.4.0      dplyr_0.8.0.1      purrr_0.3.2       
-[10] readr_1.1.1        tidyr_0.8.1        tibble_2.1.3      
-[13] ggplot2_3.2.1      tidyverse_1.2.1    astsa_1.9         
+ [1] emmeans_1.4.6      KernSmooth_2.23-16 forecast_8.9      
+ [4] fracdiff_1.4-2     tseries_0.10-47    scales_1.0.0      
+ [7] forcats_0.3.0      stringr_1.4.0      dplyr_0.8.0.1     
+[10] purrr_0.3.2        readr_1.1.1        tidyr_0.8.1       
+[13] tibble_2.1.3       ggplot2_3.2.1      tidyverse_1.2.1   
+[16] astsa_1.9         
 
 loaded via a namespace (and not attached):
- [1] zoo_1.8-5         tidyselect_0.2.5  urca_1.3-0       
- [4] haven_1.1.2       lattice_0.20-35   colorspace_1.4-1 
- [7] htmltools_0.3.6   yaml_2.2.0        rlang_0.4.0      
-[10] pillar_1.4.2      glue_1.3.1        withr_2.1.2      
-[13] TTR_0.23-5        modelr_0.1.2      readxl_1.1.0     
-[16] quantmod_0.4-15   timeDate_3043.102 munsell_0.5.0    
-[19] gtable_0.3.0      workflowr_1.4.0   cellranger_1.1.0 
-[22] rvest_0.3.2       evaluate_0.11     knitr_1.20       
-[25] lmtest_0.9-37     parallel_3.5.1    curl_3.2         
-[28] broom_0.5.0       xts_0.11-2        Rcpp_1.0.2       
-[31] backports_1.1.5   jsonlite_1.5      fs_1.2.6         
-[34] hms_0.4.2         digest_0.6.21     stringi_1.4.3    
-[37] grid_3.5.1        rprojroot_1.3-2   quadprog_1.5-8   
-[40] cli_1.1.0         tools_3.5.1       magrittr_1.5     
-[43] lazyeval_0.2.2    crayon_1.3.4      whisker_0.3-2    
-[46] pkgconfig_2.0.3   xml2_1.2.0        lubridate_1.7.4  
-[49] assertthat_0.2.1  rmarkdown_1.10    httr_1.3.1       
-[52] rstudioapi_0.8    R6_2.4.0          nnet_7.3-12      
-[55] nlme_3.1-137      git2r_0.25.2      compiler_3.5.1   </code></pre>
+ [1] Rcpp_1.0.2        lubridate_1.7.4   mvtnorm_1.0-8    
+ [4] lattice_0.20-35   zoo_1.8-5         assertthat_0.2.1 
+ [7] rprojroot_1.3-2   digest_0.6.21     lmtest_0.9-37    
+[10] plyr_1.8.4        R6_2.4.0          cellranger_1.1.0 
+[13] backports_1.1.5   coda_0.19-2       evaluate_0.11    
+[16] httr_1.3.1        pillar_1.4.2      rlang_0.4.0      
+[19] lazyeval_0.2.2    curl_3.2          readxl_1.1.0     
+[22] rstudioapi_0.8    whisker_0.3-2     TTR_0.23-5       
+[25] rmarkdown_1.10    munsell_0.5.0     broom_0.5.0      
+[28] compiler_3.5.1    modelr_0.1.2      pkgconfig_2.0.3  
+[31] urca_1.3-0        htmltools_0.3.6   nnet_7.3-12      
+[34] tidyselect_0.2.5  workflowr_1.4.0   quadprog_1.5-8   
+[37] crayon_1.3.4      withr_2.1.2       grid_3.5.1       
+[40] nlme_3.1-137      jsonlite_1.5      xtable_1.8-3     
+[43] gtable_0.3.0      git2r_0.25.2      magrittr_1.5     
+[46] quantmod_0.4-15   estimability_1.3  cli_1.1.0        
+[49] stringi_1.4.3     fs_1.2.6          timeDate_3043.102
+[52] xml2_1.2.0        xts_0.11-2        tools_3.5.1      
+[55] glue_1.3.1        hms_0.4.2         parallel_3.5.1   
+[58] yaml_2.2.0        colorspace_1.4-1  rvest_0.3.2      
+[61] knitr_1.20        haven_1.1.2      </code></pre>
 </div>
 </div>
 </div>
