@@ -167,6 +167,9 @@ Note/Q's: <br>
 ```{r echo = FALSE}
 
 sigmas = calc_sig_hats_eq25(series = ce_temps_yr_ts, p = 1/3)
+sigmas$hat_3
+# sigmas_test = calc_sig_hats_eq25(series = ce_temps_yr_ts - mean(ce_temps_yr_ts), p = 1/3)
+# sigmas_test$hat_3
 
 ```
 
@@ -468,7 +471,7 @@ summary(mdl_lin_q4)
 summary(mdl_quad_q4)
 
 
-par(mfrow=c(1,2))
+# par(mfrow=c(1,2))
 
 plot(ce_temps_q1_ts, xlim = c(1850, 2020), main = "Q1 temps with LL est. and SCBs",  ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q1$loclin_fit, lwd = 2, lty = 1, col = "coral")
