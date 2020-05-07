@@ -201,7 +201,7 @@ for (coef_idx in 1:length(coefs_phi)){
     X_randpoint = cbind(1, 100)
     
     var_yhat_1 = var(resids_mdl_lin)*(X_randpoint %*% XTX_inv %*% t(X_randpoint))  
-    q_norm_dist_1 = (1 - 0.95)/2
+    q_norm_dist_1 = (1 - 0.95)/2 # yes, represents (1 - (1-\alpha)^{1/2})/2
     y_lb_1 = sqrt(var_yhat_1)*qt(q_norm_dist_1 , length(t)-2)
     y_ub_1 = sqrt(var_yhat_1)*qt(1 - q_norm_dist_1, length(t)-2)
     
@@ -245,6 +245,7 @@ SCBs_vs_OLS_CI_df
 
 # bias_OLS = max(abs(apply(bind_cols(mu_tilde_OLS), MARGIN = 1, mean) - mean_Xn)) 
 # bias_SCB = max(abs(apply(bind_cols(mu_tilde_SCB), MARGIN = 1, mean) - mean_Xn)) 
+
 
 
 ```
@@ -387,27 +388,26 @@ Our estimated long-run standard deviations tie out with Table 1. <br>
 We note that the 1st and 3rd methods of calculating $\sigma_1$ and $\sigma_3$ are similar, while $\sigma_2$ is considerably smaller. As suggested by the paper and its calculation, $\sigma_2$ is more robust to jumps in the mean series (since it relies on calculating the median), but when jumps are not present in the series as is the case with $X_n = cos(2\pi n)$, $\sigma_1$ and $\sigma_3$ are more accurate.
 
 ```{r echo = FALSE}
-set.seed(9996)
+set.seed(9995)
 
 thetas_vec = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
-# thetas_vec = c(0, 0.25, 0.5, 0.75)
 t = seq(0, 100000)
 
-
-sigma_hat_LT_vec = numeric()
+sigma_hat_LT_mean = numeric()
 for (theta_val in thetas_vec){
-  w_is = rnorm(length(t))
-  e_is = c(rnorm(1))
-  for(i in 1:(length(t)-1)){
-    e_is = c(e_is, theta_val*abs(e_is[i]) + sqrt(1-theta_val^2)*w_is[i])
+  theta_for_fxn = theta_val
+  gen_errors = function(e_i, error_df){sqrt(1-theta_for_fxn^2)*error_df + theta_for_fxn * abs(e_i)}
+  sigma_hat_LT_vec = numeric()
+  for(iters in 1:10){
+    w_is = rnorm(length(t))
+    e_is = Reduce(gen_errors, w_is[-1], init = rnorm(1), acc = TRUE) # Function to generate errors
+    sig_hat_LT = calc_sig_hats_eq25(e_is, p = 1/3)
+    sigma_hat_LT_vec = c(sigma_hat_LT_vec, sig_hat_LT$hat_3)
   }
-  sig_hat_LT = calc_sig_hats_eq25(e_is, p = 1/3)
-  sigma_hat_LT_vec = c(sigma_hat_LT_vec, c(sig_hat_LT$hat_1, sig_hat_LT$hat_2, sig_hat_LT$hat_3))
+  sigma_hat_LT_mean = c(sigma_hat_LT_mean, mean(sigma_hat_LT_vec))
 }
 
-sig_hats_LT_vec = data.frame(thetas = sort(rep(thetas_vec, 3)),
-                             sigma = rep(c("hat_1", "hat_2", "hat_3"), length(thetas_vec)),
-                             sigma_val = round(sigma_hat_LT_vec, 3)) 
+sig_hats_LT_vec = data.frame(thetas = thetas_vec, sigma_val = round(sigma_hat_LT_mean, 3))
 
 ```
 
@@ -433,11 +433,12 @@ aaa = Sys.time()
 
 set.seed(9980)
 
-t = seq(0, 200)
+t = seq(0, 199)
 mean_Xn = cos(2*pi*t/200)
 num_reps = 5000 # number of reps to calcualte the SCB coverage and bias value
 
-b_vec = c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10, 0.12, 0.14, 0.17, 0.20)
+# b_vec = c(0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.10, 0.12, 0.14, 0.17, 0.20)
+b_vec = c(0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.20)
 
 df_results_scbs = data.frame(b = numeric(), theta = numeric(), 
                              q_95 = numeric(), coverage = numeric(), bias = numeric())
@@ -454,33 +455,32 @@ for(b_test in b_vec){
   q_95 = calc_q95(sup_mus_boot)
   
   for(theta in thetas_vec){
-  sig_hat_LT = sig_hats_LT_vec %>% 
-    filter(thetas == theta, sigma == "hat_3") %>% select(sigma_val) %>% as.numeric()
-  
-  coverages = numeric(0) 
-  mu_tildes = vector("list", length = num_reps)
-  for (iters in 1:num_reps){
-    w_is = rnorm(length(t))
-    e_is = rnorm(1)
-    for(i in 1:(length(t)-1)){
-      e_is = c(e_is, theta*abs(e_is[i]) + sqrt(1-theta^2)*w_is[i])
-    }
-    e_is_prime = (1/sig_hat_LT) * (e_is - theta*sqrt(2/pi))
-    Xn_sim = cos(2*pi*t/200) + e_is_prime
+    sig_hat_LT = sig_hats_LT_vec %>% 
+      filter(thetas == theta) %>% select(sigma_val) %>% as.numeric()
+    theta_for_fxn = theta
+    gen_errors = function(e_i, error_df){sqrt(1-theta_for_fxn^2)*error_df + theta_for_fxn * abs(e_i)}
     
-    mu_tildes[[iters]] = calc_mu_tilde(time_idx = t, Xn_sim, k_final = k_test)
-    # sig_hat = 1 because we adjust e_i's to get it so it's mean 0 SD 1, else would use LT sigma_hat
-    coverages = c(coverages, calc_coverage(t, Xn_sim, mean_Xn, q_95, sig_hat = 1, k_test)) 
-  }
-  
-  coverage_pct = length(which(coverages == 0))/length(coverages)
-  
-  bias_calc = max(abs(apply(bind_cols(mu_tildes), MARGIN = 1, mean) - mean_Xn))
-  
-  # Store results in dataframe
-  df_results_scbs = rbind(df_results_scbs, 
-                          c(b_test, theta, round(q_95, 3), round(coverage_pct, 3), round(bias_calc, 3)))
-  
+    coverages = numeric(0) 
+    mu_tildes = vector("list", length = num_reps)
+    for (iters in 1:num_reps){
+      w_is = rnorm(length(t))
+      e_is = Reduce(gen_errors, w_is[-1], init = rnorm(1), acc = TRUE)
+      e_is_prime = (1/sig_hat_LT) * (e_is - theta*sqrt(2/pi))
+      Xn_sim = cos(2*pi*t/200) + e_is_prime
+      
+      mu_tildes[[iters]] = calc_mu_tilde(time_idx = t, Xn_sim, k_final = k_test)
+      # sig_hat = 1 because we adjust e_i's to get it so it's mean 0 SD 1, else would use LT sigma_hat
+      coverages = c(coverages, calc_coverage(t, Xn_sim, mean_Xn, q_95, sig_hat = 1, k_test)) 
+    }
+    
+    coverage_pct = length(which(coverages == 0))/length(coverages)
+    
+    bias_calc = max(abs(apply(bind_cols(mu_tildes), MARGIN = 1, mean) - mean_Xn))
+    
+    # Store results in dataframe
+    df_results_scbs = rbind(df_results_scbs, 
+                            c(b_test, theta, round(q_95, 3), round(coverage_pct, 3), round(bias_calc, 3)))
+    
   }
 }
 
@@ -488,7 +488,7 @@ colnames(df_results_scbs) = c("b", "theta", "q_95", "coverage", "bias")
 
 df_results_scbs_final = 
   df_results_scbs %>%
-  left_join(sig_hats_LT_vec[sig_hats_LT_vec$sigma == "hat_3",], by = c("theta" = "thetas")) %>%
+  left_join(sig_hats_LT_vec, by = c("theta" = "thetas")) %>%
   mutate(sigma_val = round(sigma_val, 2)) %>% 
   left_join(filter(df_results_scbs[,c("theta", "b", "bias")], theta == 0), by = c("b" = "b")) %>% 
   rename(theta = theta.x, bias = bias.y) %>%
@@ -507,6 +507,9 @@ for (iters in 1:1000){
 k_rup = round(mean(k_rups))
 b_rup = round(k_rup/length(t), 3)
 
+print("optimal bandwidth length and bandwidth")
+c(k_rup, b_rup)
+
 ```
 
 Table of coverage rates over bandwidth and $\theta$ grid: 
@@ -514,6 +517,8 @@ Table of coverage rates over bandwidth and $\theta$ grid:
 ```{r}
 df_results_scbs_final %>% spread(key = theta, value = coverage) %>% 
   kable(caption = "Table of coverage rates over bandwidth and theta grid:") 
+
+df_results_scbs_final %>% spread(key = theta, value = coverage) %>% View
 
 ```
 
@@ -533,7 +538,7 @@ Below, we study how simultaneous coverage bands for SCBs with a different nomina
 
 Process is the same, except now we use 10^4 repetitions to bootstrap the 75% CI interval $q_{75}$. <br>
 
-```{r echo = FALSE}
+```{r echo = FALSE, eval = FALSE}
 aaa = Sys.time()
 
 set.seed(9980)
@@ -606,7 +611,7 @@ print(round(Sys.time() - aaa), 3)
 
 Table of coverage rates over bandwidth and $\theta$ grid: 
 
-```{r echo = FALSE}
+```{r echo = FALSE, eval = FALSE}
 df_results_scbs_final_75 %>% spread(key = theta, value = coverage) %>% 
   kable(caption = "Table of coverage rates over bandwidth and theta grid:") 
   
