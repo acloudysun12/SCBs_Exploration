@@ -556,9 +556,10 @@ summary(mdl_lin_q4)
 summary(mdl_quad_q4)
 
 
-# par(mfrow=c(1,2))
+par(mfrow=c(1,2))
 
-plot(ce_temps_q1_ts, xlim = c(1850, 2020), main = "Q1 temps with LL est. and SCBs",  ylab = "Temps (Celsius)")
+plot(ce_temps_q1_ts, xlim = c(1850, 2020), col = alpha("black", 0.5), 
+     main = "Q1 temps with LL est. and SCBs",  ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q1$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q1$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -567,7 +568,8 @@ lines(as.numeric(time(q1_temps_post_1850)), predict(object = mdl_quad_q1), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
-plot(ce_temps_q2_ts, xlim = c(1850, 2020), main = "Q2 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
+plot(ce_temps_q2_ts, xlim = c(1850, 2020), col = alpha("black", 0.5), 
+     main = "Q2 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q2$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q2$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -576,7 +578,8 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q2), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
-plot(ce_temps_q3_ts, xlim = c(1850, 2020), main = "Q3 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
+plot(ce_temps_q3_ts, xlim = c(1850, 2020), col = alpha("black", 0.5), 
+     main = "Q3 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q3$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q3$series_LB, lwd = 2, lty = 2, col = "coral")
@@ -585,7 +588,8 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q3), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
-plot(ce_temps_q4_ts, xlim = c(1850, 2020), main = "Q4 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
+plot(ce_temps_q4_ts, xlim = c(1850, 2020), col = alpha("black", 0.5), 
+     main = "Q4 temps with LL est. and SCBs", ylab = "Temps (Celsius)")
 lines(as.numeric(years), SCBs_q4$loclin_fit, lwd = 2, lty = 1, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_UB, lwd = 2, lty = 2, col = "coral")
 lines(x = as.numeric(years), y = SCBs_q4$series_LB, lwd = 2, lty = 2, col = "coral")
