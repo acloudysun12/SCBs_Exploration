@@ -24,6 +24,7 @@ library(fracdiff)
 library(forecast)
 library(KernSmooth)
 library(emmeans)
+library(tseries)
 ```
 
 
@@ -144,13 +145,29 @@ ce_resids_yr_ts_2 = loclin_kn_2$y - ce_temps_yr_ts
 
 <br>
 
-## Summary stats around temeprature increases
+## Test stationarity of time series
+
+Results indicate that yearly temperature series indeed stationary (though has auto-correlated errors)
+
+```{r}
+years = time(ce_temps_yr_ts)
+fitted_temps = lm(ce_temps_yr_ts ~ years)
+
+auto.arima(ce_temps_yr_ts - fitted_temps$fitted.values, max.p = 8, max.q = 0, ic = "bic")
+
+adf.test(ce_temps_yr_ts - fitted_temps$fitted.values, k = 2)
+adf.test(ce_temps_yr_ts, k = 2)
+
+```
+
+
+
+## Summary stats around temperature increases
 
 ```{r}
 loclin_kn_1$y[loclin_kn_1$x %in% c(1890, 1895, 1940, 1950)]
 
 loclin_kn_2$y[loclin_kn_2$x %in% c(1890, 1895, 1940, 1950)]
-
 
 ```
 
@@ -181,7 +198,7 @@ sigmas$hat_3
 <br>
 
 
-## Calculate optimal bandwidth (Rupeprt 1995) for our mean temperature series $\mu_t$ <br>
+## Calculate optimal bandwidth (Ruppert 1995) for our mean temperature series $\mu_t$ <br>
 
 Notes/Q's: <br>
 - Use function dpill() to automatically select the bandwidth proposed by Ruppert (1995) for minimizing MSE. <br>
@@ -245,9 +262,12 @@ q_95_0 = calc_q95(sup_mus_boot_0)
 q_95_lo = calc_q95(sup_mus_boot_lo)
 q_95_hi = calc_q95(sup_mus_boot_hi)
 
-SCBs_k_0 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_95_0,sigmas$hat_3, k_final_0)
+SCBs_k_0 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_95_0, sigmas$hat_3, k_final_0)
 SCBs_k_lo = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_lo, q_95_lo, sigmas$hat_3, k_final_lo)
 SCBs_k_hi = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_hi, q_95_hi, sigmas$hat_3, k_final_hi)
+
+q_75_0 = calc_q95(sup_mus_boot_0, CI_val = 0.75)
+SCBs_k_0_75 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_75_0, sigmas$hat_3, k_final_0)
 
 ```
 
@@ -306,7 +326,7 @@ summary(mdl_quad)
 mdl_cubic = lm(ce_temps_post_1850 ~ 
                  I(time(ce_temps_post_1850)^3) + I(time(ce_temps_post_1850)^2) + time(ce_temps_post_1850))
 summary(mdl_cubic)
-0# mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
+# mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
 
 plot(ce_temps_yr_ts, main = paste("Temps with LL est, 95% SCB, and model fits since 1850"), 
      col = alpha("black", 0.5), xlim = c(1850, 2020), ylab = "Temps (Celsius)")
@@ -320,8 +340,46 @@ lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic", "Cubic"), 
        col = c("coral", "purple", "green2", "chocolate3"), lty = c(2,2,2,2))
 
+abs_dev_lin = c(SCBs_k_0$series_UB[years >= 1850] - predict(object = mdl_lin), 
+                predict(object = mdl_lin) - SCBs_k_0$series_LB[years >= 1850])
+print("min absolute deviation linear")
+min(abs_dev_lin)
+
+abs_dev_quad = c(SCBs_k_0$series_UB[years >= 1850] - predict(object = mdl_quad), 
+                predict(object = mdl_quad) - SCBs_k_0$series_LB[years >= 1850])
+print("min absolute deviation quadratic")
+min(abs_dev_quad)
+
+abs_dev_cubic = c(SCBs_k_0$series_UB[years >= 1850] - predict(object = mdl_cubic), 
+                predict(object = mdl_cubic) - SCBs_k_0$series_LB[years >= 1850])
+print("min absolute deviation cubic")
+min(abs_dev_cubic)
+
 ```
 
+<br>
+
+## Fitting curves through the 90% SCBs 
+
+We can test the extent of how "feasible" each model is. Perhaps through lower confidence level SCB. Perhaps through some deviation measure. 
+
+```{r}
+
+plot(ce_temps_yr_ts, main = paste("Temps with LL est, 75% SCB, and model fits since 1850"), 
+     col = alpha("black", 0.5), xlim = c(1850, 2020), ylab = "Temps (Celsius)")
+lines(as.numeric(years), SCBs_k_0_75$loclin_fit, lwd = 2, lty = 1, col = alpha("coral", 0.5))
+lines(x = as.numeric(years), y = SCBs_k_0_75$series_UB, lwd = 2, lty = 2, col = alpha("coral", 0.5))
+lines(x = as.numeric(years), y = SCBs_k_0_75$series_LB, lwd = 2, lty = 2, col = alpha("coral", 0.5))
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_lin), lwd = 2, lty = 2, col = "purple")
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_quad), lwd = 2, lty = 2, col = "green2")
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2, lty = 2, col = "chocolate3")
+# lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = "black")
+legend("bottomright", legend = c("SCB", "Linear", "Quadratic", "Cubic"), 
+       col = c("coral", "purple", "green2", "chocolate3"), lty = c(2,2,2,2))
+
+```
+
+<br> 
 
 # Data Analysis - Quarterly <br>
 
@@ -359,6 +417,30 @@ Results: <br>
 - All else equal, this suggests wider bands for winter and narrower bands for autumn. <br>
 - What does "blockmax" do? Why does it have such a large impact on bandwidth? <br>
 - We choose a higher "blockmax" = 8 since it has such a significant effect on q3 bandwidth estimation.
+
+<br> 
+
+## Test stationarity of time series for each quarter
+
+```{r}
+
+years = time(ce_temps_yr_ts)
+fitted_temps_q1 = lm(ce_temps_q1_ts ~ years)
+fitted_temps_q2 = lm(ce_temps_q2_ts ~ years)
+fitted_temps_q3 = lm(ce_temps_q3_ts ~ years)
+fitted_temps_q4 = lm(ce_temps_q4_ts ~ years)
+
+auto.arima(ce_temps_q1_ts - fitted_temps_q1$fitted.values, max.p = 8, max.q = 0, ic = "aic", stationary = T)
+auto.arima(ce_temps_q2_ts - fitted_temps_q2$fitted.values, max.p = 8, max.q = 0, ic = "aic", stationary = T)
+auto.arima(ce_temps_q3_ts - fitted_temps_q3$fitted.values, max.p = 8, max.q = 0, ic = "aic", stationary = T)
+auto.arima(ce_temps_q4_ts - fitted_temps_q4$fitted.values, max.p = 8, max.q = 0, ic = "aic", stationary = T)
+
+adf.test(ce_temps_q1_ts, alternative = "stationary", k = 0)
+adf.test(ce_temps_q2_ts, alternative = "stationary", k = 2)
+adf.test(ce_temps_q3_ts, alternative = "stationary", k = 2)
+adf.test(ce_temps_q4_ts, alternative = "stationary", k = 2)
+
+```
 
 <br> 
 
@@ -509,6 +591,55 @@ lines(as.numeric(time(q2_temps_post_1850)), predict(object = mdl_quad_q4), lwd =
 legend("bottomright", legend = c("SCB", "Linear", "Quadratic"), 
        col = c("coral", "purple", "green2"), lty = c(2,2,2), cex = 0.75)
 
+```
+
+<br>
+
+Estimating the minimum absolute deviation for linear and quadratic models for our quarterly temperatures as well
+
+```{r}
+abs_dev_lin_q1 = c(SCBs_q1$series_UB[years >= 1850] - predict(object = mdl_lin_q1), 
+                predict(object = mdl_lin_q1) - SCBs_q1$series_LB[years >= 1850])
+print("min absolute deviation linear q1")
+min(abs_dev_lin_q1)
+
+abs_dev_quad_q1 = c(SCBs_q1$series_UB[years >= 1850] - predict(object = mdl_quad_q1), 
+                predict(object = mdl_quad_q1) - SCBs_q1$series_LB[years >= 1850])
+print("min absolute deviation quadratic q1")
+min(abs_dev_quad_q1)
+
+
+abs_dev_lin_q2 = c(SCBs_q2$series_UB[years >= 1850] - predict(object = mdl_lin_q2), 
+                predict(object = mdl_lin_q2) - SCBs_q2$series_LB[years >= 1850])
+print("min absolute deviation linear q2")
+min(abs_dev_lin_q2)
+
+abs_dev_quad_q2 = c(SCBs_q2$series_UB[years >= 1850] - predict(object = mdl_quad_q2), 
+                predict(object = mdl_quad_q2) - SCBs_q2$series_LB[years >= 1850])
+print("min absolute deviation quadratic q2")
+min(abs_dev_quad_q2)
+
+
+abs_dev_lin_q3 = c(SCBs_q3$series_UB[years >= 1850] - predict(object = mdl_lin_q3), 
+                predict(object = mdl_lin_q3) - SCBs_q3$series_LB[years >= 1850])
+print("min absolute deviation linear q3")
+min(abs_dev_lin_q3)
+
+abs_dev_quad_q3 = c(SCBs_q3$series_UB[years >= 1850] - predict(object = mdl_quad_q3), 
+                predict(object = mdl_quad_q3) - SCBs_q3$series_LB[years >= 1850])
+print("min absolute deviation quadratic q3")
+min(abs_dev_quad_q3)
+
+
+abs_dev_lin_q4 = c(SCBs_q4$series_UB[years >= 1850] - predict(object = mdl_lin_q4), 
+                predict(object = mdl_lin_q4) - SCBs_q4$series_LB[years >= 1850])
+print("min absolute deviation linear q4")
+min(abs_dev_lin_q4)
+
+abs_dev_quad_q4 = c(SCBs_q4$series_UB[years >= 1850] - predict(object = mdl_quad_q4), 
+                predict(object = mdl_quad_q4) - SCBs_q4$series_LB[years >= 1850])
+print("min absolute deviation quadratic q4")
+min(abs_dev_quad_q4)
 
 ```
 
