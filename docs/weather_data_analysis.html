@@ -344,7 +344,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-05-06
+<strong>Last updated:</strong> 2020-05-11
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -435,10 +435,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree8f317e9cb3d9ac847f0b31f2aa74a9d6c33dfb02targetblank8f317e9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/8f317e9cb3d9ac847f0b31f2aa74a9d6c33dfb02" target="_blank">8f317e9</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree6eb589ac59383c0ebb274d793f858632746c6205targetblank6eb589aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/acloudysun12/SCBs_Exploration/tree/6eb589ac59383c0ebb274d793f858632746c6205" target="_blank">6eb589a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree8f317e9cb3d9ac847f0b31f2aa74a9d6c33dfb02targetblank8f317e9a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomacloudysun12SCBsExplorationtree6eb589ac59383c0ebb274d793f858632746c6205targetblank6eb589aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -491,6 +491,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/6eb589ac59383c0ebb274d793f858632746c6205/analysis/weather_data_analysis.Rmd" target="_blank">6eb589a</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-11
+</td>
+<td>
+updated with mean abs deviation of fitted line from SCBs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/acloudysun12/SCBs_Exploration/989c1ac44dc6a99d2fc6171e5700363f2e394480/docs/weather_data_analysis.html" target="_blank">989c1ac</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1198,8 +1232,44 @@ Adam Sun
 </div>
 <p><br></p>
 </div>
-<div id="summary-stats-around-temeprature-increases" class="section level2">
-<h2>Summary stats around temeprature increases</h2>
+<div id="test-stationarity-of-time-series" class="section level2">
+<h2>Test stationarity of time series</h2>
+<p>Results indicate that yearly temperature series indeed stationary (though has auto-correlated errors)</p>
+<pre class="r"><code>years = time(ce_temps_yr_ts)
+fitted_temps = lm(ce_temps_yr_ts ~ years)
+
+auto.arima(ce_temps_yr_ts - fitted_temps$fitted.values, max.p = 8, max.q = 0, ic = &quot;bic&quot;)</code></pre>
+<pre><code>Series: ce_temps_yr_ts - fitted_temps$fitted.values 
+ARIMA(2,0,0) with zero mean 
+
+Coefficients:
+         ar1     ar2
+      0.1641  0.2109
+s.e.  0.0515  0.0517
+
+sigma^2 estimated as 0.3628:  log likelihood=-327.39
+AIC=660.78   AICc=660.85   BIC=672.44</code></pre>
+<pre class="r"><code>adf.test(ce_temps_yr_ts - fitted_temps$fitted.values, k = 2)</code></pre>
+<pre><code>Warning in adf.test(ce_temps_yr_ts - fitted_temps$fitted.values, k = 2): p-
+value smaller than printed p-value</code></pre>
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  ce_temps_yr_ts - fitted_temps$fitted.values
+Dickey-Fuller = -7.8895, Lag order = 2, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+<pre class="r"><code>adf.test(ce_temps_yr_ts, k = 2)</code></pre>
+<pre><code>Warning in adf.test(ce_temps_yr_ts, k = 2): p-value smaller than printed p-
+value</code></pre>
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  ce_temps_yr_ts
+Dickey-Fuller = -7.8895, Lag order = 2, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+</div>
+<div id="summary-stats-around-temperature-increases" class="section level2">
+<h2>Summary stats around temperature increases</h2>
 <pre class="r"><code>loclin_kn_1$y[loclin_kn_1$x %in% c(1890, 1895, 1940, 1950)]</code></pre>
 <pre><code>[1] 8.986336 9.084081 9.566522 9.572136</code></pre>
 <pre class="r"><code>loclin_kn_2$y[loclin_kn_2$x %in% c(1890, 1895, 1940, 1950)]</code></pre>
@@ -1218,8 +1288,8 @@ Adam Sun
 </ul>
 <p><br></p>
 </div>
-<div id="calculate-optimal-bandwidth-rupeprt-1995-for-our-mean-temperature-series-mu_t" class="section level2">
-<h2>Calculate optimal bandwidth (Rupeprt 1995) for our mean temperature series <span class="math inline">\(\mu_t\)</span> <br></h2>
+<div id="calculate-optimal-bandwidth-ruppert-1995-for-our-mean-temperature-series-mu_t" class="section level2">
+<h2>Calculate optimal bandwidth (Ruppert 1995) for our mean temperature series <span class="math inline">\(\mu_t\)</span> <br></h2>
 <p>Notes/Q’s: <br> - Use function dpill() to automatically select the bandwidth proposed by Ruppert (1995) for minimizing MSE. <br> - Maybe also try range of bandwidths higher/lower than Ruppert ideal bandwidth for exploration. <br> - Get variance correction factor (<span class="math inline">\(\hat\rho\)</span>) for each bandwidth based on step (a) of 4.1: Implementation. <br> - <span class="math inline">\(\hat\nu\)</span> based on the sample variance of the errors (observed - fitted local linear estimate based on bandwidth) <br> - <strong>Final bandwidth based on <span class="math inline">\(2\hat\rho^{1/5}b_{rup}\)</span>,</strong> <br> - <strong>We also try trying <span class="math inline">\(b_{rup}\)</span> +/- 0.025 (which means length of 9).</strong> <br></p>
 <pre><code>[1] 1.858558</code></pre>
 <p><br></p>
@@ -1245,9 +1315,12 @@ q_95_0 = calc_q95(sup_mus_boot_0)
 q_95_lo = calc_q95(sup_mus_boot_lo)
 q_95_hi = calc_q95(sup_mus_boot_hi)
 
-SCBs_k_0 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_95_0,sigmas$hat_3, k_final_0)
+SCBs_k_0 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_95_0, sigmas$hat_3, k_final_0)
 SCBs_k_lo = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_lo, q_95_lo, sigmas$hat_3, k_final_lo)
-SCBs_k_hi = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_hi, q_95_hi, sigmas$hat_3, k_final_hi)</code></pre>
+SCBs_k_hi = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_hi, q_95_hi, sigmas$hat_3, k_final_hi)
+
+q_75_0 = calc_q95(sup_mus_boot_0, CI_val = 0.75)
+SCBs_k_0_75 = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_0, q_75_0, sigmas$hat_3, k_final_0)</code></pre>
 <p><brr></p>
 <p>Out of curiosity, we also look at how much of our true temperature series is covered by the SCBs. <br> This is not grounded in theory, but perhaps it gives a sense of how strongly our temperature series fluctuates year over year.</p>
 <p><strong>Coverage of actual data with 95% SCB for bandwidth length = 25</strong> – 0.667 <br> <strong>Coverage of actual data with 95% SCB for bandwidth length = 16</strong> – 0.783 <br> <strong>Coverage of actual data with 95% SCB for bandwidth length = 34</strong> – 0.583 <br></p>
@@ -1256,13 +1329,13 @@ SCBs_k_hi = calc_SCBs(years, ce_temps_yr_ts, sup_mus_boot_hi, q_95_hi, sigmas$ha
 <div id="plots-with-scbs" class="section level2">
 <h2>Plots with SCBs <br></h2>
 <p>Notes/Q’s: <br> - For each bandwidth tried, we plot time series, local linear estimates, and their SCBs.</p>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
-Past versions of unnamed-chunk-7-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
+Past versions of unnamed-chunk-8-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div id="fig-unnamed-chunk-8-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1281,7 +1354,40 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-7-1.png" target="_blank">958de64</a>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/989c1ac44dc6a99d2fc6171e5700363f2e394480/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">989c1ac</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/d5ab36f2ee04b254b1cdfa2bab462317b6adebc4/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">d5ab36f</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">7bbcc54</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-05
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">958de64</a>
 </td>
 <td>
 Adam Sun
@@ -1292,95 +1398,20 @@ Adam Sun
 </tr>
 <tr>
 <td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/aaf31b1dbd08939f3dc4c84114062ec018933b37/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-7-1.png" target="_blank">aaf31b1</a>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">cc3ac7c</a>
 </td>
 <td>
 Adam Sun
 </td>
 <td>
-2020-04-16
+2020-03-05
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-2">
-Past versions of unnamed-chunk-7-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-7-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-7-2.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-3">
-Past versions of unnamed-chunk-7-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-7-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-7-3.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="fitting-curves-through-the-95-scbs" class="section level2">
 <h2>Fitting curves through the 95% SCBs</h2>
@@ -1450,9 +1481,9 @@ time(ce_temps_post_1850)       3.800e+00  5.051e+00   0.752    0.453
 Residual standard error: 0.5447 on 166 degrees of freedom
 Multiple R-squared:  0.3054,    Adjusted R-squared:  0.2929 
 F-statistic: 24.33 on 3 and 166 DF,  p-value: 4.222e-13</code></pre>
-<pre class="r"><code>0# mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est, 95% SCB, and model fits since 1850&quot;), 
+<pre class="r"><code># mdl_iso = isoreg(time(ce_temps_post_1850), y = ce_temps_post_1850)
+
+plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est, 95% SCB, and model fits since 1850&quot;), 
      col = alpha(&quot;black&quot;, 0.5), xlim = c(1850, 2020), ylab = &quot;Temps (Celsius)&quot;)
 lines(as.numeric(years), SCBs_k_0$loclin_fit, lwd = 2, lty = 1, col = alpha(&quot;coral&quot;, 0.5))
 lines(x = as.numeric(years), y = SCBs_k_0$series_UB, lwd = 2, lty = 2, col = alpha(&quot;coral&quot;, 0.5))
@@ -1463,13 +1494,13 @@ lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2
 # lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = &quot;black&quot;)
 legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;, &quot;Cubic&quot;), 
        col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;, &quot;chocolate3&quot;), lty = c(2,2,2,2))</code></pre>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-8-1">
-Past versions of unnamed-chunk-8-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-9-1">
+Past versions of unnamed-chunk-9-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-8-1" class="collapse">
+<div id="fig-unnamed-chunk-9-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1488,40 +1519,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/d5ab36f2ee04b254b1cdfa2bab462317b6adebc4/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">d5ab36f</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">7bbcc54</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-8-1.png" target="_blank">cc3ac7c</a>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/cc3ac7c6857d5cce761d100dab3c767ecc86412e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-9-1.png" target="_blank">cc3ac7c</a>
 </td>
 <td>
 Adam Sun
@@ -1534,6 +1532,79 @@ Adam Sun
 </table>
 </div>
 </div>
+<pre class="r"><code>abs_dev_lin = c(SCBs_k_0$series_UB[years &gt;= 1850] - predict(object = mdl_lin), 
+                predict(object = mdl_lin) - SCBs_k_0$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation linear&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation linear&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_lin)</code></pre>
+<pre><code>[1] 0.1050946</code></pre>
+<pre class="r"><code>abs_dev_quad = c(SCBs_k_0$series_UB[years &gt;= 1850] - predict(object = mdl_quad), 
+                predict(object = mdl_quad) - SCBs_k_0$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation quadratic&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation quadratic&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_quad)</code></pre>
+<pre><code>[1] 0.372987</code></pre>
+<pre class="r"><code>abs_dev_cubic = c(SCBs_k_0$series_UB[years &gt;= 1850] - predict(object = mdl_cubic), 
+                predict(object = mdl_cubic) - SCBs_k_0$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation cubic&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation cubic&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_cubic)</code></pre>
+<pre><code>[1] 0.4540766</code></pre>
+<p><br></p>
+</div>
+<div id="fitting-curves-through-the-90-scbs" class="section level2">
+<h2>Fitting curves through the 90% SCBs</h2>
+<p>We can test the extent of how “feasible” each model is. Perhaps through lower confidence level SCB. Perhaps through some deviation measure.</p>
+<pre class="r"><code>plot(ce_temps_yr_ts, main = paste(&quot;Temps with LL est, 75% SCB, and model fits since 1850&quot;), 
+     col = alpha(&quot;black&quot;, 0.5), xlim = c(1850, 2020), ylab = &quot;Temps (Celsius)&quot;)
+lines(as.numeric(years), SCBs_k_0_75$loclin_fit, lwd = 2, lty = 1, col = alpha(&quot;coral&quot;, 0.5))
+lines(x = as.numeric(years), y = SCBs_k_0_75$series_UB, lwd = 2, lty = 2, col = alpha(&quot;coral&quot;, 0.5))
+lines(x = as.numeric(years), y = SCBs_k_0_75$series_LB, lwd = 2, lty = 2, col = alpha(&quot;coral&quot;, 0.5))
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_lin), lwd = 2, lty = 2, col = &quot;purple&quot;)
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_quad), lwd = 2, lty = 2, col = &quot;green2&quot;)
+lines(as.numeric(time(ce_temps_post_1850)), predict(object = mdl_cubic), lwd = 2, lty = 2, col = &quot;chocolate3&quot;)
+# lines(as.numeric(time(ce_temps_post_1850)), mdl_iso$yf, lwd = 2, lty = 3, col = &quot;black&quot;)
+legend(&quot;bottomright&quot;, legend = c(&quot;SCB&quot;, &quot;Linear&quot;, &quot;Quadratic&quot;, &quot;Cubic&quot;), 
+       col = c(&quot;coral&quot;, &quot;purple&quot;, &quot;green2&quot;, &quot;chocolate3&quot;), lty = c(2,2,2,2))</code></pre>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/aaf31b1dbd08939f3dc4c84114062ec018933b37/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-10-1.png" target="_blank">aaf31b1</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
 </div>
 </div>
 <div id="data-analysis---quarterly" class="section level1">
@@ -1543,6 +1614,91 @@ Adam Sun
 <h2>Estimate <span class="math inline">\(\hat\sigma\)</span> with Eq (25) <br></h2>
 <p>Note/Q’s: <br> - Estimate the long-term <span class="math inline">\(\hat\sigma\)</span> with the residuals of <span class="math inline">\(X_i - \mu_k(i)\)</span> as per step (a) of 4.1: Implementation. <br> - We use the locpoly function in R which estimates local polynomial fitting with Normal kernel weights. <br> - Again, we use <span class="math inline">\(k_n\)</span> = 360^(1/3) to estimate <span class="math inline">\(\hat\sigma_3\)</span> = the long-term SD <span class="math inline">\(\hat\sigma\)</span>. <br></p>
 <p>Results: <br> - Not surprisingly, different quarters have varying different long-term <span class="math inline">\(\hat\sigma\)</span>s. - The winter season (Quarter 1) has the highest SD at 1.305. followed by spring, summer, and lastly autumn at 0.646. <br> - All else equal, this suggests wider bands for winter and narrower bands for autumn. <br> - What does “blockmax” do? Why does it have such a large impact on bandwidth? <br> - We choose a higher “blockmax” = 8 since it has such a significant effect on q3 bandwidth estimation.</p>
+<p><br></p>
+</div>
+<div id="test-stationarity-of-time-series-for-each-quarter" class="section level2">
+<h2>Test stationarity of time series for each quarter</h2>
+<pre class="r"><code>years = time(ce_temps_yr_ts)
+fitted_temps_q1 = lm(ce_temps_q1_ts ~ years)
+fitted_temps_q2 = lm(ce_temps_q2_ts ~ years)
+fitted_temps_q3 = lm(ce_temps_q3_ts ~ years)
+fitted_temps_q4 = lm(ce_temps_q4_ts ~ years)
+
+auto.arima(ce_temps_q1_ts - fitted_temps_q1$fitted.values, max.p = 8, max.q = 0, ic = &quot;aic&quot;, stationary = T)</code></pre>
+<pre><code>Series: ce_temps_q1_ts - fitted_temps_q1$fitted.values 
+ARIMA(0,0,0) with zero mean 
+
+sigma^2 estimated as 1.69:  log likelihood=-605.25
+AIC=1212.5   AICc=1212.51   BIC=1216.38</code></pre>
+<pre class="r"><code>auto.arima(ce_temps_q2_ts - fitted_temps_q2$fitted.values, max.p = 8, max.q = 0, ic = &quot;aic&quot;, stationary = T)</code></pre>
+<pre><code>Series: ce_temps_q2_ts - fitted_temps_q2$fitted.values 
+ARIMA(2,0,0) with zero mean 
+
+Coefficients:
+         ar1     ar2
+      0.1626  0.1533
+s.e.  0.0521  0.0521
+
+sigma^2 estimated as 0.6705:  log likelihood=-437.9
+AIC=881.79   AICc=881.86   BIC=893.45</code></pre>
+<pre class="r"><code>auto.arima(ce_temps_q3_ts - fitted_temps_q3$fitted.values, max.p = 8, max.q = 0, ic = &quot;aic&quot;, stationary = T)</code></pre>
+<pre><code>Series: ce_temps_q3_ts - fitted_temps_q3$fitted.values 
+ARIMA(2,0,0) with zero mean 
+
+Coefficients:
+         ar1     ar2
+      0.1077  0.1344
+s.e.  0.0522  0.0525
+
+sigma^2 estimated as 0.6373:  log likelihood=-428.74
+AIC=863.48   AICc=863.55   BIC=875.14</code></pre>
+<pre class="r"><code>auto.arima(ce_temps_q4_ts - fitted_temps_q4$fitted.values, max.p = 8, max.q = 0, ic = &quot;aic&quot;, stationary = T)</code></pre>
+<pre><code>Series: ce_temps_q4_ts - fitted_temps_q4$fitted.values 
+ARIMA(2,0,0) with zero mean 
+
+Coefficients:
+         ar1     ar2
+      0.1925  0.1298
+s.e.  0.0522  0.0524
+
+sigma^2 estimated as 0.6577:  log likelihood=-434.43
+AIC=874.87   AICc=874.93   BIC=886.53</code></pre>
+<pre class="r"><code>adf.test(ce_temps_q1_ts, alternative = &quot;stationary&quot;, k = 0)</code></pre>
+<pre><code>Warning in adf.test(ce_temps_q1_ts, alternative = &quot;stationary&quot;, k = 0): p-
+value smaller than printed p-value</code></pre>
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  ce_temps_q1_ts
+Dickey-Fuller = -18.828, Lag order = 0, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+<pre class="r"><code>adf.test(ce_temps_q2_ts, alternative = &quot;stationary&quot;, k = 2)</code></pre>
+<pre><code>Warning in adf.test(ce_temps_q2_ts, alternative = &quot;stationary&quot;, k = 2): p-
+value smaller than printed p-value</code></pre>
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  ce_temps_q2_ts
+Dickey-Fuller = -8.5741, Lag order = 2, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+<pre class="r"><code>adf.test(ce_temps_q3_ts, alternative = &quot;stationary&quot;, k = 2)</code></pre>
+<pre><code>Warning in adf.test(ce_temps_q3_ts, alternative = &quot;stationary&quot;, k = 2): p-
+value smaller than printed p-value</code></pre>
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  ce_temps_q3_ts
+Dickey-Fuller = -8.667, Lag order = 2, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
+<pre class="r"><code>adf.test(ce_temps_q4_ts, alternative = &quot;stationary&quot;, k = 2)</code></pre>
+<pre><code>Warning in adf.test(ce_temps_q4_ts, alternative = &quot;stationary&quot;, k = 2): p-
+value smaller than printed p-value</code></pre>
+<pre><code>
+    Augmented Dickey-Fuller Test
+
+data:  ce_temps_q4_ts
+Dickey-Fuller = -8.6578, Lag order = 2, p-value = 0.01
+alternative hypothesis: stationary</code></pre>
 <p><br></p>
 </div>
 <div id="calculate-bandwidth-for-temperature-series-by-quarter" class="section level2">
@@ -1717,13 +1873,13 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 Residual standard error: 0.7395 on 167 degrees of freedom
 Multiple R-squared:  0.3259,    Adjusted R-squared:  0.3179 
 F-statistic: 40.38 on 2 and 167 DF,  p-value: 4.964e-15</code></pre>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-1">
-Past versions of unnamed-chunk-12-1.png
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
 </button>
 </p>
-<div id="fig-unnamed-chunk-12-1" class="collapse">
+<div id="fig-unnamed-chunk-15-1" class="collapse">
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
 <thead>
@@ -1742,210 +1898,81 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/d5ab36f2ee04b254b1cdfa2bab462317b6adebc4/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" target="_blank">d5ab36f</a>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/989c1ac44dc6a99d2fc6171e5700363f2e394480/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-15-1.png" target="_blank">989c1ac</a>
+</td>
+<td>
+Adam Sun
+</td>
+<td>
+2020-05-06
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-15-1.png" target="_blank">7bbcc54</a>
 </td>
 <td>
 Adam Sun
 </td>
 <td>
 2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" target="_blank">7bbcc54</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/281d25e084e9b5ef556c4d2a0f4e0dd03e79d35e/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-1.png" target="_blank">281d25e</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-04-16
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-2">
-Past versions of unnamed-chunk-12-2.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-12-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/d5ab36f2ee04b254b1cdfa2bab462317b6adebc4/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-2.png" target="_blank">d5ab36f</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-2.png" target="_blank">7bbcc54</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-2.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-3">
-Past versions of unnamed-chunk-12-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-12-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-3.png" target="_blank">7bbcc54</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-3.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-12-4.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-12-4">
-Past versions of unnamed-chunk-12-4.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-12-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-4.png" target="_blank">7bbcc54</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/958de64a720f6b9e5dfc3c3247b7b0a446a4cd8d/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-12-4.png" target="_blank">958de64</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-04
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-15-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><br></p>
+<p>Estimating the minimum absolute deviation for linear and quadratic models for our quarterly temperatures as well</p>
+<pre class="r"><code>abs_dev_lin_q1 = c(SCBs_q1$series_UB[years &gt;= 1850] - predict(object = mdl_lin_q1), 
+                predict(object = mdl_lin_q1) - SCBs_q1$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation linear q1&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation linear q1&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_lin_q1)</code></pre>
+<pre><code>[1] 0.3786247</code></pre>
+<pre class="r"><code>abs_dev_quad_q1 = c(SCBs_q1$series_UB[years &gt;= 1850] - predict(object = mdl_quad_q1), 
+                predict(object = mdl_quad_q1) - SCBs_q1$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation quadratic q1&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation quadratic q1&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_quad_q1)</code></pre>
+<pre><code>[1] 0.2934377</code></pre>
+<pre class="r"><code>abs_dev_lin_q2 = c(SCBs_q2$series_UB[years &gt;= 1850] - predict(object = mdl_lin_q2), 
+                predict(object = mdl_lin_q2) - SCBs_q2$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation linear q2&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation linear q2&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_lin_q2)</code></pre>
+<pre><code>[1] 0.7447349</code></pre>
+<pre class="r"><code>abs_dev_quad_q2 = c(SCBs_q2$series_UB[years &gt;= 1850] - predict(object = mdl_quad_q2), 
+                predict(object = mdl_quad_q2) - SCBs_q2$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation quadratic q2&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation quadratic q2&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_quad_q2)</code></pre>
+<pre><code>[1] 0.785746</code></pre>
+<pre class="r"><code>abs_dev_lin_q3 = c(SCBs_q3$series_UB[years &gt;= 1850] - predict(object = mdl_lin_q3), 
+                predict(object = mdl_lin_q3) - SCBs_q3$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation linear q3&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation linear q3&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_lin_q3)</code></pre>
+<pre><code>[1] 0.09251934</code></pre>
+<pre class="r"><code>abs_dev_quad_q3 = c(SCBs_q3$series_UB[years &gt;= 1850] - predict(object = mdl_quad_q3), 
+                predict(object = mdl_quad_q3) - SCBs_q3$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation quadratic q3&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation quadratic q3&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_quad_q3)</code></pre>
+<pre><code>[1] 0.3795622</code></pre>
+<pre class="r"><code>abs_dev_lin_q4 = c(SCBs_q4$series_UB[years &gt;= 1850] - predict(object = mdl_lin_q4), 
+                predict(object = mdl_lin_q4) - SCBs_q4$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation linear q4&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation linear q4&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_lin_q4)</code></pre>
+<pre><code>[1] 0.08718661</code></pre>
+<pre class="r"><code>abs_dev_quad_q4 = c(SCBs_q4$series_UB[years &gt;= 1850] - predict(object = mdl_quad_q4), 
+                predict(object = mdl_quad_q4) - SCBs_q4$series_LB[years &gt;= 1850])
+print(&quot;min absolute deviation quadratic q4&quot;)</code></pre>
+<pre><code>[1] &quot;min absolute deviation quadratic q4&quot;</code></pre>
+<pre class="r"><code>min(abs_dev_quad_q4)</code></pre>
+<pre><code>[1] 0.3115464</code></pre>
 <p><br></p>
 <p>Test whether the coefficients of linear trends are statistically significantly different. ANOVA</p>
 <pre class="r"><code>ce_temps_post_1850_long = ce_temps %&gt;% gather(key = Qtr, value = Temp, -Year) %&gt;% filter(Year &gt;= 1850)
@@ -2064,44 +2091,7 @@ P value adjustment: tukey method for comparing a family of 4 estimates </code></
 <ul>
 <li>Thoughts with fake data. Test structural breaks etc, like suppose we added 2 degrees Celsius to all temps after 1990, etc.</li>
 </ul>
-<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
-Past versions of unnamed-chunk-15-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-15-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/acloudysun12/SCBs_Exploration/blob/7bbcc54b8f1e5c6741f668bcfa9bbcfd27d56c11/docs/figure/weather_data_analysis.Rmd/unnamed-chunk-15-1.png" target="_blank">7bbcc54</a>
-</td>
-<td>
-Adam Sun
-</td>
-<td>
-2020-05-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/weather_data_analysis.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <!-- ## Calculate coverage of actual data with 95% SCB for temperature series<br>  -->
 <p><br> <br></p>
